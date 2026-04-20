@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "Metrics.h"
+#include <nlohmann/json.hpp>
 
 class SearchTree {
 protected:
@@ -15,6 +16,7 @@ public:
     virtual std::vector<int> rangeQuery(int start, int end) = 0;
     virtual std::vector<int> inOrderTraversal() = 0;
     virtual std::vector<int> preOrderTraversal() = 0;
+    virtual nlohmann::json toJson() = 0;
 
     TreeMetrics getMetrics() const { return metrics; }
     void resetMetricsForOperation() { metrics.resetForOperation(); }

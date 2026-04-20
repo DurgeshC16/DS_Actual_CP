@@ -39,6 +39,7 @@ set(SOURCES
     src/MetricCollector.cpp
     src/BenchmarkRunner.cpp
     src/InteractiveRunner.cpp
+    src/Simulations.cpp
 )
 
 # TreeLib library
@@ -49,6 +50,10 @@ target_link_libraries(TreeLib PUBLIC nlohmann_json::nlohmann_json)
 # Main executable
 add_executable(TreeAnalyzer src/main.cpp)
 target_link_libraries(TreeAnalyzer PRIVATE TreeLib)
+
+# CLI tool for Backend Integration
+add_executable(tree_cli src/tree_cli.cpp)
+target_link_libraries(tree_cli PRIVATE TreeLib)
 
 # Tests executable
 enable_testing()

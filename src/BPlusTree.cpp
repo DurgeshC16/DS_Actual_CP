@@ -248,3 +248,36 @@ void BPlusTree::updateHeightAndMemory() {
     mem += nodeCount * ( MAX * sizeof(int) + (MAX+1) * sizeof(void*) );
     metrics.memoryBytes = mem;
 }
+
+void BPlusTree_toJsonHelper(BPlusTreeNode* node, nlohmann::json& nodes, nlohmann::json& edges, int& counter, int parentId = -1) {
+    if (!node) return;
+    int currentId = counter++;
+    
+    std::string keysStr = "";
+    for(size_t i=0; i<node->keys.size(); ++i) {
+        keysStr += std::to_string(node->keys[i]);
+        if(i < node->keys.size()-1) keysStr += ", ";
+    }
+    
+    nodes.push_back({{"id", currentId}, {"key", keysStr}, {"leaf", node->leaf}});
+    if (parentId != -1) {
+        edges.push_back({{"source", parentId}, {"target", currentId}});
+    }
+    
+    if(!node->leaf) {
+        for(size_t i=0; i<node->children.size(); ++i) {
+            BPlusTree_toJsonHelper(node->children[i], nodes, edges, counter, currentId);
+        }
+    }
+}
+
+nlohmann::json BPlusTree::toJson() {
+    nlohmann::json result;
+    nlohmann::json nodes = nlohmann::json::array();
+    nlohmann::json edges = nlohmann::json::array();
+    int counter = 0;
+    BPlusTree_toJsonHelper(root, nodes, edges, counter, -1);
+    result["nodes"] = nodes;
+    result["edges"] = edges;
+    return result;
+}

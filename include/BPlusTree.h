@@ -35,4 +35,5 @@ public:
     std::vector<int> preOrderTraversal() override;
 
     void updateHeightAndMemory() override;
+    nlohmann::json toJson() override;
 };

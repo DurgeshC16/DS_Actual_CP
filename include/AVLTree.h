@@ -41,6 +41,7 @@ public:
     std::vector<int> rangeQuery(int start, int end) override;
     std::vector<int> inOrderTraversal() override;
     std::vector<int> preOrderTraversal() override;
+    nlohmann::json toJson() override;
 
     void updateHeightAndMemory() override;
 };

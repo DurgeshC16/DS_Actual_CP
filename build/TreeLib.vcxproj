@@ -308,6 +308,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="C:\Programming\Second Year\SY DS-2\Actual CP\src\MetricCollector.cpp" />
     <ClCompile Include="C:\Programming\Second Year\SY DS-2\Actual CP\src\BenchmarkRunner.cpp" />
     <ClCompile Include="C:\Programming\Second Year\SY DS-2\Actual CP\src\InteractiveRunner.cpp" />
+    <ClCompile Include="C:\Programming\Second Year\SY DS-2\Actual CP\src\Simulations.cpp" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

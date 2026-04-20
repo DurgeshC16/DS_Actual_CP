@@ -202,6 +202,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Project>{0F607C17-61A2-3896-8CC4-CF0BDDBE1707}</Project>
       <Name>gtest_main</Name>
     </ProjectReference>
+    <ProjectReference Include="C:\Programming\Second Year\SY DS-2\Actual CP\build\tree_cli.vcxproj">
+      <Project>{E3BE0A84-6F2B-31CB-B4AB-0AED6F407F6E}</Project>
+      <Name>tree_cli</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

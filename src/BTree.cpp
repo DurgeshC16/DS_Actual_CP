@@ -368,3 +368,37 @@ void BTree::updateHeightAndMemory() {
     mem += nodeCount * (avgKeysCap * sizeof(int) + avgChildCap * sizeof(void*));
     metrics.memoryBytes = mem;
 }
+
+void BTree_toJsonHelper(BTreeNode* node, nlohmann::json& nodes, nlohmann::json& edges, int& counter, int parentId = -1) {
+    if (!node) return;
+    int currentId = counter++;
+    
+    // Group keys as CSV or an array. D3 is easier with a single label
+    std::string keysStr = "";
+    for(size_t i=0; i<node->keys.size(); ++i) {
+        keysStr += std::to_string(node->keys[i]);
+        if(i < node->keys.size()-1) keysStr += ", ";
+    }
+    
+    nodes.push_back({{"id", currentId}, {"key", keysStr}, {"leaf", node->leaf}});
+    if (parentId != -1) {
+        edges.push_back({{"source", parentId}, {"target", currentId}});
+    }
+    
+    if(!node->leaf) {
+        for(size_t i=0; i<node->children.size(); ++i) {
+            BTree_toJsonHelper(node->children[i], nodes, edges, counter, currentId);
+        }
+    }
+}
+
+nlohmann::json BTree::toJson() {
+    nlohmann::json result;
+    nlohmann::json nodes = nlohmann::json::array();
+    nlohmann::json edges = nlohmann::json::array();
+    int counter = 0;
+    BTree_toJsonHelper(root, nodes, edges, counter, -1);
+    result["nodes"] = nodes;
+    result["edges"] = edges;
+    return result;
+}

@@ -25,6 +25,9 @@
     <ClCompile Include="C:\Programming\Second Year\SY DS-2\Actual CP\src\InteractiveRunner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Programming\Second Year\SY DS-2\Actual CP\src\Simulations.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Programming\Second Year\SY DS-2\Actual CP\CMakeLists.txt" />

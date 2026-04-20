@@ -409,3 +409,26 @@ void RedBlackTree::updateHeightAndMemory() {
     metrics.maxHeight = getHeightHelper(root);
     metrics.memoryBytes = nodeCount * sizeof(RBTNode);
 }
+
+void RBTree_toJsonHelper(RBTNode* node, RBTNode* TNULL, nlohmann::json& nodes, nlohmann::json& edges, int& counter, int parentId = -1) {
+    if (node == TNULL || !node) return;
+    int currentId = counter++;
+    std::string colorStr = (node->color == RED) ? "red" : "black";
+    nodes.push_back({{"id", currentId}, {"key", node->key}, {"color", colorStr}});
+    if (parentId != -1) {
+        edges.push_back({{"source", parentId}, {"target", currentId}});
+    }
+    RBTree_toJsonHelper(node->left, TNULL, nodes, edges, counter, currentId);
+    RBTree_toJsonHelper(node->right, TNULL, nodes, edges, counter, currentId);
+}
+
+nlohmann::json RedBlackTree::toJson() {
+    nlohmann::json result;
+    nlohmann::json nodes = nlohmann::json::array();
+    nlohmann::json edges = nlohmann::json::array();
+    int counter = 0;
+    RBTree_toJsonHelper(root, TNULL, nodes, edges, counter, -1);
+    result["nodes"] = nodes;
+    result["edges"] = edges;
+    return result;
+}

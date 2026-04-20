@@ -248,3 +248,25 @@ void AVLTree::updateHeightAndMemory() {
     metrics.maxHeight = getHeight(root);
     metrics.memoryBytes = nodeCount * sizeof(AVLNode);
 }
+
+void AVLTree_toJsonHelper(AVLNode* node, nlohmann::json& nodes, nlohmann::json& edges, int& counter, int parentId = -1) {
+    if (!node) return;
+    int currentId = counter++;
+    nodes.push_back({{"id", currentId}, {"key", node->key}, {"height", node->height}});
+    if (parentId != -1) {
+        edges.push_back({{"source", parentId}, {"target", currentId}});
+    }
+    AVLTree_toJsonHelper(node->left, nodes, edges, counter, currentId);
+    AVLTree_toJsonHelper(node->right, nodes, edges, counter, currentId);
+}
+
+nlohmann::json AVLTree::toJson() {
+    nlohmann::json result;
+    nlohmann::json nodes = nlohmann::json::array();
+    nlohmann::json edges = nlohmann::json::array();
+    int counter = 0;
+    AVLTree_toJsonHelper(root, nodes, edges, counter, -1);
+    result["nodes"] = nodes;
+    result["edges"] = edges;
+    return result;
+}
