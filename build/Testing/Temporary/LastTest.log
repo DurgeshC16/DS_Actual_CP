@@ -1,0 +1,246 @@
+Start testing: Mar 17 09:17 India Standard Time
+----------------------------------------------------------
+1/9 Testing: AVLTreeTest.InsertAndBalance
+1/9 Test: AVLTreeTest.InsertAndBalance
+Command: "C:/Programming/Second Year/SY DS-2/Actual CP/build/Release/TreeTests.exe" "--gtest_filter=AVLTreeTest.InsertAndBalance" "--gtest_also_run_disabled_tests"
+Directory: C:/Programming/Second Year/SY DS-2/Actual CP/build
+"AVLTreeTest.InsertAndBalance" start time: Mar 17 09:17 India Standard Time
+Output:
+----------------------------------------------------------
+Running main() from C:\Programming\Second Year\SY DS-2\Actual CP\build\_deps\googletest-src\googletest\src\gtest_main.cc
+Note: Google Test filter = AVLTreeTest.InsertAndBalance
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AVLTreeTest
+[ RUN      ] AVLTreeTest.InsertAndBalance
+[       OK ] AVLTreeTest.InsertAndBalance (0 ms)
+[----------] 1 test from AVLTreeTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"AVLTreeTest.InsertAndBalance" end time: Mar 17 09:17 India Standard Time
+"AVLTreeTest.InsertAndBalance" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/9 Testing: AVLTreeTest.InOrderSorted
+2/9 Test: AVLTreeTest.InOrderSorted
+Command: "C:/Programming/Second Year/SY DS-2/Actual CP/build/Release/TreeTests.exe" "--gtest_filter=AVLTreeTest.InOrderSorted" "--gtest_also_run_disabled_tests"
+Directory: C:/Programming/Second Year/SY DS-2/Actual CP/build
+"AVLTreeTest.InOrderSorted" start time: Mar 17 09:17 India Standard Time
+Output:
+----------------------------------------------------------
+Running main() from C:\Programming\Second Year\SY DS-2\Actual CP\build\_deps\googletest-src\googletest\src\gtest_main.cc
+Note: Google Test filter = AVLTreeTest.InOrderSorted
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AVLTreeTest
+[ RUN      ] AVLTreeTest.InOrderSorted
+[       OK ] AVLTreeTest.InOrderSorted (0 ms)
+[----------] 1 test from AVLTreeTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"AVLTreeTest.InOrderSorted" end time: Mar 17 09:17 India Standard Time
+"AVLTreeTest.InOrderSorted" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/9 Testing: AVLTreeTest.DeleteAndBalance
+3/9 Test: AVLTreeTest.DeleteAndBalance
+Command: "C:/Programming/Second Year/SY DS-2/Actual CP/build/Release/TreeTests.exe" "--gtest_filter=AVLTreeTest.DeleteAndBalance" "--gtest_also_run_disabled_tests"
+Directory: C:/Programming/Second Year/SY DS-2/Actual CP/build
+"AVLTreeTest.DeleteAndBalance" start time: Mar 17 09:17 India Standard Time
+Output:
+----------------------------------------------------------
+Running main() from C:\Programming\Second Year\SY DS-2\Actual CP\build\_deps\googletest-src\googletest\src\gtest_main.cc
+Note: Google Test filter = AVLTreeTest.DeleteAndBalance
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AVLTreeTest
+[ RUN      ] AVLTreeTest.DeleteAndBalance
+[       OK ] AVLTreeTest.DeleteAndBalance (0 ms)
+[----------] 1 test from AVLTreeTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"AVLTreeTest.DeleteAndBalance" end time: Mar 17 09:17 India Standard Time
+"AVLTreeTest.DeleteAndBalance" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/9 Testing: RedBlackTreeTest.Invariants
+4/9 Test: RedBlackTreeTest.Invariants
+Command: "C:/Programming/Second Year/SY DS-2/Actual CP/build/Release/TreeTests.exe" "--gtest_filter=RedBlackTreeTest.Invariants" "--gtest_also_run_disabled_tests"
+Directory: C:/Programming/Second Year/SY DS-2/Actual CP/build
+"RedBlackTreeTest.Invariants" start time: Mar 17 09:17 India Standard Time
+Output:
+----------------------------------------------------------
+Running main() from C:\Programming\Second Year\SY DS-2\Actual CP\build\_deps\googletest-src\googletest\src\gtest_main.cc
+Note: Google Test filter = RedBlackTreeTest.Invariants
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RedBlackTreeTest
+[ RUN      ] RedBlackTreeTest.Invariants
+[       OK ] RedBlackTreeTest.Invariants (0 ms)
+[----------] 1 test from RedBlackTreeTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"RedBlackTreeTest.Invariants" end time: Mar 17 09:17 India Standard Time
+"RedBlackTreeTest.Invariants" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/9 Testing: RedBlackTreeTest.InOrderSorted
+5/9 Test: RedBlackTreeTest.InOrderSorted
+Command: "C:/Programming/Second Year/SY DS-2/Actual CP/build/Release/TreeTests.exe" "--gtest_filter=RedBlackTreeTest.InOrderSorted" "--gtest_also_run_disabled_tests"
+Directory: C:/Programming/Second Year/SY DS-2/Actual CP/build
+"RedBlackTreeTest.InOrderSorted" start time: Mar 17 09:17 India Standard Time
+Output:
+----------------------------------------------------------
+Running main() from C:\Programming\Second Year\SY DS-2\Actual CP\build\_deps\googletest-src\googletest\src\gtest_main.cc
+Note: Google Test filter = RedBlackTreeTest.InOrderSorted
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RedBlackTreeTest
+[ RUN      ] RedBlackTreeTest.InOrderSorted
+[       OK ] RedBlackTreeTest.InOrderSorted (0 ms)
+[----------] 1 test from RedBlackTreeTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"RedBlackTreeTest.InOrderSorted" end time: Mar 17 09:17 India Standard Time
+"RedBlackTreeTest.InOrderSorted" time elapsed: 00:00:00
+----------------------------------------------------------
+
+6/9 Testing: BTreeTest.Invariants
+6/9 Test: BTreeTest.Invariants
+Command: "C:/Programming/Second Year/SY DS-2/Actual CP/build/Release/TreeTests.exe" "--gtest_filter=BTreeTest.Invariants" "--gtest_also_run_disabled_tests"
+Directory: C:/Programming/Second Year/SY DS-2/Actual CP/build
+"BTreeTest.Invariants" start time: Mar 17 09:17 India Standard Time
+Output:
+----------------------------------------------------------
+Running main() from C:\Programming\Second Year\SY DS-2\Actual CP\build\_deps\googletest-src\googletest\src\gtest_main.cc
+Note: Google Test filter = BTreeTest.Invariants
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from BTreeTest
+[ RUN      ] BTreeTest.Invariants
+[       OK ] BTreeTest.Invariants (0 ms)
+[----------] 1 test from BTreeTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"BTreeTest.Invariants" end time: Mar 17 09:17 India Standard Time
+"BTreeTest.Invariants" time elapsed: 00:00:00
+----------------------------------------------------------
+
+7/9 Testing: BTreeTest.InOrderSorted
+7/9 Test: BTreeTest.InOrderSorted
+Command: "C:/Programming/Second Year/SY DS-2/Actual CP/build/Release/TreeTests.exe" "--gtest_filter=BTreeTest.InOrderSorted" "--gtest_also_run_disabled_tests"
+Directory: C:/Programming/Second Year/SY DS-2/Actual CP/build
+"BTreeTest.InOrderSorted" start time: Mar 17 09:17 India Standard Time
+Output:
+----------------------------------------------------------
+Running main() from C:\Programming\Second Year\SY DS-2\Actual CP\build\_deps\googletest-src\googletest\src\gtest_main.cc
+Note: Google Test filter = BTreeTest.InOrderSorted
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from BTreeTest
+[ RUN      ] BTreeTest.InOrderSorted
+[       OK ] BTreeTest.InOrderSorted (0 ms)
+[----------] 1 test from BTreeTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"BTreeTest.InOrderSorted" end time: Mar 17 09:17 India Standard Time
+"BTreeTest.InOrderSorted" time elapsed: 00:00:00
+----------------------------------------------------------
+
+8/9 Testing: BPlusTreeTest.LeavesLinkedAndSorted
+8/9 Test: BPlusTreeTest.LeavesLinkedAndSorted
+Command: "C:/Programming/Second Year/SY DS-2/Actual CP/build/Release/TreeTests.exe" "--gtest_filter=BPlusTreeTest.LeavesLinkedAndSorted" "--gtest_also_run_disabled_tests"
+Directory: C:/Programming/Second Year/SY DS-2/Actual CP/build
+"BPlusTreeTest.LeavesLinkedAndSorted" start time: Mar 17 09:17 India Standard Time
+Output:
+----------------------------------------------------------
+Running main() from C:\Programming\Second Year\SY DS-2\Actual CP\build\_deps\googletest-src\googletest\src\gtest_main.cc
+Note: Google Test filter = BPlusTreeTest.LeavesLinkedAndSorted
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from BPlusTreeTest
+[ RUN      ] BPlusTreeTest.LeavesLinkedAndSorted
+[       OK ] BPlusTreeTest.LeavesLinkedAndSorted (0 ms)
+[----------] 1 test from BPlusTreeTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"BPlusTreeTest.LeavesLinkedAndSorted" end time: Mar 17 09:17 India Standard Time
+"BPlusTreeTest.LeavesLinkedAndSorted" time elapsed: 00:00:00
+----------------------------------------------------------
+
+9/9 Testing: BPlusTreeTest.InOrderSorted
+9/9 Test: BPlusTreeTest.InOrderSorted
+Command: "C:/Programming/Second Year/SY DS-2/Actual CP/build/Release/TreeTests.exe" "--gtest_filter=BPlusTreeTest.InOrderSorted" "--gtest_also_run_disabled_tests"
+Directory: C:/Programming/Second Year/SY DS-2/Actual CP/build
+"BPlusTreeTest.InOrderSorted" start time: Mar 17 09:17 India Standard Time
+Output:
+----------------------------------------------------------
+Running main() from C:\Programming\Second Year\SY DS-2\Actual CP\build\_deps\googletest-src\googletest\src\gtest_main.cc
+Note: Google Test filter = BPlusTreeTest.InOrderSorted
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from BPlusTreeTest
+[ RUN      ] BPlusTreeTest.InOrderSorted
+[       OK ] BPlusTreeTest.InOrderSorted (0 ms)
+[----------] 1 test from BPlusTreeTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"BPlusTreeTest.InOrderSorted" end time: Mar 17 09:17 India Standard Time
+"BPlusTreeTest.InOrderSorted" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Mar 17 09:17 India Standard Time

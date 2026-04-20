@@ -1,0 +1,10 @@
+AVLTreeTest.InsertAndBalance 3 0.00531037
+AVLTreeTest.InOrderSorted 3 0.00536617
+AVLTreeTest.DeleteAndBalance 3 0.00662737
+RedBlackTreeTest.Invariants 3 0.00539307
+RedBlackTreeTest.InOrderSorted 3 0.00514797
+BTreeTest.Invariants 3 0.00511303
+BTreeTest.InOrderSorted 3 0.0058538
+BPlusTreeTest.LeavesLinkedAndSorted 3 0.00499117
+BPlusTreeTest.InOrderSorted 3 0.00537507
+---

@@ -1,0 +1,8 @@
+MSBuild version 17.14.19+164abd434 for .NET Framework
+
+  MetricCollector.cpp
+C:\Programming\Second Year\SY DS-2\Actual CP\src\MetricCollector.cpp(2,10): error C1083: Cannot open include file: 'nlohmann/json.hpp': No such file or directory [C:\Programming\Second Year\SY DS-2\Actual CP\build\TreeLib.vcxproj]
+  gtest.vcxproj -> C:\Programming\Second Year\SY DS-2\Actual CP\build\lib\Release\gtest.lib
+  gtest_main.vcxproj -> C:\Programming\Second Year\SY DS-2\Actual CP\build\lib\Release\gtest_main.lib
+  gmock.vcxproj -> C:\Programming\Second Year\SY DS-2\Actual CP\build\lib\Release\gmock.lib
+  gmock_main.vcxproj -> C:\Programming\Second Year\SY DS-2\Actual CP\build\lib\Release\gmock_main.lib

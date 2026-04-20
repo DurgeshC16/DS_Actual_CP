@@ -1,0 +1,5 @@
+if(EXISTS "C:/Programming/Second Year/SY DS-2/Actual CP/build/TreeTests[1]_tests.cmake")
+  include("C:/Programming/Second Year/SY DS-2/Actual CP/build/TreeTests[1]_tests.cmake")
+else()
+  add_test(TreeTests_NOT_BUILT TreeTests_NOT_BUILT)
+endif()

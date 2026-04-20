@@ -1,0 +1,75 @@
+{
+  "tests": 9,
+  "name": "AllTests",
+  "testsuites": [
+    {
+      "name": "AVLTreeTest",
+      "tests": 3,
+      "testsuite": [
+        {
+          "name": "InsertAndBalance",
+          "file": "C:\\Programming\\Second Year\\SY DS-2\\Actual CP\\tests\\TreeTests.cpp",
+          "line": 33
+        },
+        {
+          "name": "InOrderSorted",
+          "file": "C:\\Programming\\Second Year\\SY DS-2\\Actual CP\\tests\\TreeTests.cpp",
+          "line": 42
+        },
+        {
+          "name": "DeleteAndBalance",
+          "file": "C:\\Programming\\Second Year\\SY DS-2\\Actual CP\\tests\\TreeTests.cpp",
+          "line": 50
+        }
+      ]
+    },
+    {
+      "name": "RedBlackTreeTest",
+      "tests": 2,
+      "testsuite": [
+        {
+          "name": "Invariants",
+          "file": "C:\\Programming\\Second Year\\SY DS-2\\Actual CP\\tests\\TreeTests.cpp",
+          "line": 78
+        },
+        {
+          "name": "InOrderSorted",
+          "file": "C:\\Programming\\Second Year\\SY DS-2\\Actual CP\\tests\\TreeTests.cpp",
+          "line": 89
+        }
+      ]
+    },
+    {
+      "name": "BTreeTest",
+      "tests": 2,
+      "testsuite": [
+        {
+          "name": "Invariants",
+          "file": "C:\\Programming\\Second Year\\SY DS-2\\Actual CP\\tests\\TreeTests.cpp",
+          "line": 123
+        },
+        {
+          "name": "InOrderSorted",
+          "file": "C:\\Programming\\Second Year\\SY DS-2\\Actual CP\\tests\\TreeTests.cpp",
+          "line": 133
+        }
+      ]
+    },
+    {
+      "name": "BPlusTreeTest",
+      "tests": 2,
+      "testsuite": [
+        {
+          "name": "LeavesLinkedAndSorted",
+          "file": "C:\\Programming\\Second Year\\SY DS-2\\Actual CP\\tests\\TreeTests.cpp",
+          "line": 169
+        },
+        {
+          "name": "InOrderSorted",
+          "file": "C:\\Programming\\Second Year\\SY DS-2\\Actual CP\\tests\\TreeTests.cpp",
+          "line": 179
+        }
+      ]
+    }
+  ]
+}
