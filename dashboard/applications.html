@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-World Applications - ADS Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body class="apps-page">
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="nav-logo">ADS Simulator</div>
+            <ul class="nav-links">
+                <li><a href="performance.html">Performance Analysis</a></li>
+                <li><a href="applications.html" class="active">Real-World Applications</a></li>
+                <li><a href="manual.html">Try With Your Data</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="app-layout">
+        <aside class="app-sidebar">
+            <div class="sidebar-info">
+                <h3>Simulations</h3>
+                <p>Select a scenario to visualize data structure applications.</p>
+            </div>
+            <nav class="mode-selector">
+                <div class="nav-item-glass active" data-mode="database">
+                    <span class="icon">🗄️</span>
+                    <div class="item-text">
+                        <span class="label">Database Index</span>
+                        <span class="sub">B+ Tree Implementation</span>
+                    </div>
+                </div>
+                <div class="nav-item-glass" data-mode="search">
+                    <span class="icon">🔍</span>
+                    <div class="item-text">
+                        <span class="label">Search Engine</span>
+                        <span class="sub">AVL/RB Keyword Hashing</span>
+                    </div>
+                </div>
+                <div class="nav-item-glass" data-mode="filesystem">
+                    <span class="icon">📁</span>
+                    <div class="item-text">
+                        <span class="label">File System</span>
+                        <span class="sub">N-ary Path Simulation</span>
+                    </div>
+                </div>
+                <div class="nav-item-glass" data-mode="memory">
+                    <span class="icon">💾</span>
+                    <div class="item-text">
+                        <span class="label">Memory Allocator</span>
+                        <span class="sub">Best Fit / Worst Fit</span>
+                    </div>
+                </div>
+                <div class="nav-item-glass" data-mode="network">
+                    <span class="icon">🌐</span>
+                    <div class="item-text">
+                        <span class="label">Network Router</span>
+                        <span class="sub">Graph + Dijkstra Path</span>
+                    </div>
+                </div>
+                <div class="nav-item-glass" data-mode="expression">
+                    <span class="icon">➕</span>
+                    <div class="item-text">
+                        <span class="label">Expression Tree</span>
+                        <span class="sub">AST Math Parsing</span>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="app-main">
+            <header class="app-header">
+                <div class="title-group">
+                    <h2 id="mode-title">Database Index Simulation</h2>
+                    <span class="complexity-badge" id="mode-complexity">O(log n)</span>
+                </div>
+                <div class="app-controls" id="mode-controls">
+                    <!-- Controls injected dynamically -->
+                </div>
+            </header>
+
+            <div class="app-workspace">
+                <div class="viz-card glass">
+                    <div id="d3-container" class="viz-canvas"></div>
+                </div>
+                
+                <div class="side-panel">
+                    <div class="stats-card glass">
+                        <h3>Metrics</h3>
+                        <div class="metric-row">
+                            <span>Operations:</span>
+                            <span id="stat-ops">0</span>
+                        </div>
+                        <div class="metric-row">
+                            <span>Time:</span>
+                            <span id="stat-time">0ms</span>
+                        </div>
+                    </div>
+                    
+                    <div class="logs-card glass">
+                        <h3>Operation Logs</h3>
+                        <div class="log-container" id="log-list">
+                            <div class="log-entry system">Ready. Select a mode to begin.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/d3_visualizer.js"></script>
+    <script src="js/apps_logic.js"></script>
+</body>
+</html>

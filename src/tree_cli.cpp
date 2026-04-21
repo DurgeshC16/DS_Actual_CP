@@ -60,20 +60,37 @@ int main(int argc, char* argv[]) {
         tree = std::make_unique<BTree>();
     } else if (type == "bplus") {
         tree = std::make_unique<BPlusTree>();
-    } else if (type == "fs") {
-        // Mock execution
-        std::cout << simulateFileSystem({}).dump() << std::endl;
+    }
+
+    auto wrapMock = [](json mockTree) {
+        json response;
+        response["status"] = "success";
+        response["tree"] = mockTree;
+        return response;
+    };
+
+    std::vector<std::string> actions_vec;
+    if (input_json.contains("actions") && input_json["actions"].is_array()) {
+        for (const auto& a : input_json["actions"]) {
+            actions_vec.push_back(a.get<std::string>());
+        }
+    }
+
+    if (type == "fs" || type == "filesystem") {
+        std::cout << wrapMock(simulateFileSystem(actions_vec)).dump() << std::endl;
         return 0;
-    } else if (type == "expr") {
-        std::cout << simulateExpressionTree("").dump() << std::endl;
+    } else if (type == "expr" || type == "expression") {
+        std::string expr = actions_vec.empty() ? "" : actions_vec[0];
+        if (expr.find("eval:") == 0) expr = expr.substr(5);
+        std::cout << wrapMock(simulateExpressionTree(expr)).dump() << std::endl;
         return 0;
     } else if (type == "memory") {
-        std::cout << simulateMemoryAllocator({}).dump() << std::endl;
+        std::cout << wrapMock(simulateMemoryAllocator(actions_vec)).dump() << std::endl;
         return 0;
     } else if (type == "network") {
-        std::cout << simulateNetworkRouting({}).dump() << std::endl;
+        std::cout << wrapMock(simulateNetworkRouting(actions_vec)).dump() << std::endl;
         return 0;
-    } else {
+    } else if (type != "avl" && type != "rb" && type != "btree" && type != "bplus") {
         fail("Unknown tree/simulation type: " + type);
     }
 

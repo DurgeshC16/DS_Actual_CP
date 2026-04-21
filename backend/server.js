@@ -12,7 +12,10 @@ app.use(cors());
 app.use(express.json());
 
 // Assuming backend is run from the `backend` folder
-const CLI_PATH = path.join(__dirname, '..', 'build', 'Debug', 'tree_cli.exe');
+let CLI_PATH = path.join(__dirname, '..', 'build', 'Debug', 'tree_cli.exe');
+if (!fs.existsSync(CLI_PATH)) {
+    CLI_PATH = path.join(__dirname, '..', 'build', 'tree_cli.exe'); // MinGW output path
+}
 
 async function executeTreeCli(type, actions) {
     return new Promise((resolve, reject) => {
@@ -21,6 +24,8 @@ async function executeTreeCli(type, actions) {
         
         fs.writeFileSync(inputPath, JSON.stringify({ actions }));
 
+        console.log(`Running CLI... type: ${type}, actions: ${actions.length}`);
+        
         // Execute C++ CLI
         execFile(CLI_PATH, ['--type', type, '--input', inputPath], (error, stdout, stderr) => {
             // Clean up temp file

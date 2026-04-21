@@ -1,36 +1,40 @@
-class TreeVisualizer {
+class ADSVisualizer {
     constructor(containerId) {
         this.containerId = containerId;
         this.container = d3.select(`#${containerId}`);
-        this.width = this.container.node().getBoundingClientRect().width;
-        this.height = this.container.node().getBoundingClientRect().height;
+        this.svg = this.container.append("svg").attr("width", "100%").attr("height", "100%");
+        this.g = this.svg.append("g");
+
+        this.zoom = d3.zoom().on("zoom", (e) => this.g.attr("transform", e.transform));
+        this.svg.call(this.zoom);
         
-        this.svg = this.container.append("svg")
-            .attr("width", "100%")
-            .attr("height", "100%")
-            .call(d3.zoom().on("zoom", (e) => {
-                this.g.attr("transform", e.transform);
-            }))
-            .append("g")
-            .attr("transform", `translate(${this.width/2}, 50)`); // center top
-            
-        this.g = this.svg;
+        window.addEventListener('resize', () => this.updateSize());
+        this.updateSize();
     }
 
-    render(treeData) {
-        this.g.selectAll("*").remove(); // clear current
-        
-        if (!treeData || !treeData.nodes || treeData.nodes.length === 0) {
-            return;
-        }
+    updateSize() {
+        this.width = this.container.node().getBoundingClientRect().width;
+        this.height = this.container.node().getBoundingClientRect().height;
+    }
 
-        // Stratify the flat data into a hierarchy
-        // The root has no source in edges, so its parent is null
-        
-        const parentMap = new Map();
-        for (const e of treeData.edges) {
-            parentMap.set(e.target, e.source);
+    clear() {
+        this.g.selectAll("*").remove();
+    }
+
+    render(data) {
+        this.clear();
+        if (!data || !data.nodes || data.nodes.length === 0) return;
+
+        if (data.isGraph) {
+            this.renderGraph(data);
+        } else {
+            this.renderTree(data);
         }
+    }
+
+    renderTree(treeData) {
+        const parentMap = new Map();
+        (treeData.edges || []).forEach(e => parentMap.set(e.target, e.source));
 
         const hierarchicalData = treeData.nodes.map(n => ({
             ...n,
@@ -43,20 +47,30 @@ class TreeVisualizer {
                 .parentId(d => d.parentId)
                 (hierarchicalData);
 
-            // Configure tree layout
-            const treeLayout = d3.tree().nodeSize([60, 80]); // spacing
-            
+            const treeLayout = d3.tree().nodeSize([70, 100]);
             treeLayout(root);
+
+            // Center the tree
+            this.svg.call(this.zoom.transform, d3.zoomIdentity.translate(this.width / 2, 50));
 
             // Links
             this.g.selectAll(".link")
                 .data(root.links())
                 .enter().append("path")
                 .attr("class", "link")
-                .attr("d", d3.linkVertical()
-                    .x(d => d.x)
-                    .y(d => d.y)
-                );
+                .attr("d", d3.linkVertical().x(d => d.x).y(d => d.y));
+
+            // Optional B+ Tree leaf links
+            if (treeData.type === 'bplus') {
+                const leaves = root.leaves().sort((a, b) => a.x - b.x);
+                for (let i = 0; i < leaves.length - 1; i++) {
+                    this.g.append("path")
+                        .attr("class", "link leaf-link")
+                        .attr("d", `M ${leaves[i].x} ${leaves[i].y} L ${leaves[i+1].x} ${leaves[i+1].y}`)
+                        .style("stroke-dasharray", "4,2")
+                        .style("stroke", "#60a5fa");
+                }
+            }
 
             // Nodes
             const node = this.g.selectAll(".node")
@@ -66,19 +80,73 @@ class TreeVisualizer {
                 .attr("transform", d => `translate(${d.x},${d.y})`);
 
             node.append("circle")
-                .attr("r", 20)
+                .attr("r", 22)
                 .style("fill", d => {
-                    if (d.data.color) return d.data.color === 'red' ? '#ef4444' : '#1e293b';
-                    if (d.data.type === 'folder') return '#93c5fd';
-                    if (d.data.type === 'op') return '#a78bfa';
+                    if (d.data.highlight) return '#fbbf24';
+                    if (d.data.color === 'red') return '#ef4444';
+                    if (d.data.color === 'black') return '#1e293b';
+                    if (d.data.type === 'folder') return '#3b82f6';
                     return 'var(--bg-primary)';
                 });
 
             node.append("text")
-                .text(d => d.data.key);
+                .attr("dy", "0.35em")
+                .text(d => d.data.key)
+                .style("fill", "#fff")
+                .style("text-anchor", "middle");
 
         } catch (e) {
-            console.error("D3 rendering error:", e);
+            console.error("D3 Tree Error:", e);
         }
+    }
+
+    renderGraph(graphData) {
+        const simulation = d3.forceSimulation(graphData.nodes)
+            .force("link", d3.forceLink(graphData.edges).id(d => d.id).distance(150))
+            .force("charge", d3.forceManyBody().strength(-300))
+            .force("center", d3.forceCenter(this.width / 2, this.height / 2));
+
+        this.svg.call(this.zoom.transform, d3.zoomIdentity);
+
+        const link = this.g.selectAll(".link")
+            .data(graphData.edges)
+            .enter().append("line")
+            .attr("class", "link")
+            .style("stroke-width", d => d.isPartOfPath ? 4 : 1.5)
+            .style("stroke", d => d.isPartOfPath ? "#22d3ee" : "#334155");
+
+        const node = this.g.selectAll(".node")
+            .data(graphData.nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .call(d3.drag()
+                .on("start", (e, d) => {
+                    if (!e.active) simulation.alphaTarget(0.3).restart();
+                    d.fx = d.x; d.fy = d.y;
+                })
+                .on("drag", (e, d) => { d.fx = e.x; d.fy = e.y; })
+                .on("end", (e, d) => {
+                    if (!e.active) simulation.alphaTarget(0);
+                    d.fx = null; d.fy = null;
+                }));
+
+        node.append("circle")
+            .attr("r", 15)
+            .style("fill", d => d.isSource ? "#10b981" : (d.isDest ? "#ef4444" : "#1e293b"));
+
+        node.append("text")
+            .attr("dy", -20)
+            .text(d => d.name)
+            .style("fill", "#94a3b8")
+            .style("text-anchor", "middle");
+
+        simulation.on("tick", () => {
+            link.attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+
+            node.attr("transform", d => `translate(${d.x},${d.y})`);
+        });
     }
 }

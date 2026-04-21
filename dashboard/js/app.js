@@ -83,19 +83,22 @@ async function submitAction(op) {
         });
         
         const data = await response.json();
+        console.log("API Response:", data); // Requested debug check
         
         if (data.status === 'success') {
             visualizer.render(data.tree);
             if (data.metrics) updateMetrics(data.metrics);
             if (data.logs) renderLogs(data.logs);
         } else {
-            console.error(data.message);
+            console.error("Backend Error:", data.message);
+            alert("Error: " + data.message);
             // Revert action if failed
             activeActions.pop();
         }
         
     } catch (e) {
-        console.error("Fetch error", e);
+        console.error("Fetch/CORS error:", e);
+        alert("Fetch failed. Is the backend running on port 3000?");
         // Revert
         activeActions.pop();
     }
