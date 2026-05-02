@@ -3,104 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Data Structures Benchmark</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>ADS Simulator - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="css/navbar.css">
+    <style>
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 5rem 2rem 3rem;
+            background: radial-gradient(circle at center top, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 3rem;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+        .feature-card {
+            display: flex;
+            flex-direction: column;
+            padding: 2.5rem 2rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.15);
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        .feature-desc {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            flex: 1;
+        }
+    </style>
 </head>
-<body>
+<body class="landing-page" style="overflow: auto;">
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="nav-logo">ADS Simulator</div>
+            <ul class="nav-links">
+                <li><a href="performance.html">Performance Analysis</a></li>
+                <li><a href="applications.html">Real-World Applications</a></li>
+                <li><a href="manual.html">Try With Your Data</a></li>
+            </ul>
+        </div>
+    </nav>
 
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h1>ADS Benchmark</h1>
-        </div>
-        <div class="nav-item active" data-mode="avl">
-            <span>⚙️</span> AVL Tree
-        </div>
-        <div class="nav-item" data-mode="rb">
-            <span>🔴</span> Red-Black Tree
-        </div>
-        <div class="nav-item" data-mode="btree">
-            <span>🌳</span> B-Tree
-        </div>
-        <hr style="border-color: var(--border); margin: 10px 20px;">
-        <!-- Real World Simulations -->
-        <div class="nav-item" data-mode="database">
-            <span>🗄️</span> Database Index
-        </div>
-        <div class="nav-item" data-mode="expression">
-            <span>➕</span> Expression Tree
-        </div>
-        <div class="nav-item" data-mode="filesystem">
-            <span>📁</span> File System
-        </div>
-        <div class="nav-item" data-mode="network">
-            <span>🌐</span> Network Routing
-        </div>
-        <div class="nav-item" data-mode="memory">
-            <span>💾</span> Memory Allocator
-        </div>
-    </aside>
+    <main>
+        <section class="hero">
+            <h1>Advanced Data Structures</h1>
+            <p>Interactive visualization, performance benchmarking, and real-world simulation for complex self-balancing trees.</p>
+        </section>
 
-    <main class="main-content">
-        <header class="top-bar">
-            <h2 id="mode-title" style="margin: 0; font-weight: 600;">AVL Tree Simulation</h2>
-            <div class="controls" id="controls-container">
-                <!-- Dynamic controls will be injected here -->
-                <input type="text" id="node-val" placeholder="Value (e.g. 10)">
-                <button id="btn-insert">Insert</button>
-                <button id="btn-delete" class="danger">Delete</button>
-                <button id="btn-search">Search</button>
-                <button id="btn-clear" style="background:var(--border);">Clear</button>
-            </div>
-        </header>
-
-        <section class="workspace">
-            <div class="visualization-container" id="d3-container">
-                <!-- D3 tree will render here -->
-            </div>
+        <section class="feature-grid">
+            <a href="performance.html" class="feature-card glass">
+                <div class="feature-icon">📊</div>
+                <h2 class="feature-title">Performance Analysis</h2>
+                <p class="feature-desc">Compare execution times, memory usage, and structural operations across different tree algorithms using large datasets.</p>
+            </a>
             
-            <aside class="metrics-panel">
-                <div class="card">
-                    <h3>Complexity Insight</h3>
-                    <div class="metric-row">
-                        <span style="color: var(--text-secondary)">Search:</span>
-                        <span id="cx-search" class="metric-val" style="font-size: 1rem;">O(log n)</span>
-                    </div>
-                    <div class="metric-row">
-                        <span style="color: var(--text-secondary)">Insert:</span>
-                        <span id="cx-insert" class="metric-val" style="font-size: 1rem;">O(log n)</span>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3>Performance Metrics</h3>
-                    <div class="metric-row">
-                        <span style="color: var(--text-secondary)">Comparisons:</span>
-                        <span id="metric-cmp" class="metric-val">0</span>
-                    </div>
-                    <div class="metric-row">
-                        <span style="color: var(--text-secondary)">Rotations:</span>
-                        <span id="metric-rot" class="metric-val">0</span>
-                    </div>
-                    <div class="metric-row">
-                        <span style="color: var(--text-secondary)">Memory:</span>
-                        <span id="metric-mem" class="metric-val">0 B</span>
-                    </div>
-                </div>
-
-                <div class="card" style="flex:1; display:flex; flex-direction:column;">
-                    <h3>Execution Logs</h3>
-                    <ul class="log-list" id="log-list">
-                        <!-- Logs will appear here -->
-                        <li style="border-left-color: #64748b;">System initialized.</li>
-                    </ul>
-                </div>
-            </aside>
+            <a href="applications.html" class="feature-card glass">
+                <div class="feature-icon">🌍</div>
+                <h2 class="feature-title">Real-World Applications</h2>
+                <p class="feature-desc">See how B+ Trees power databases, how AVL trees handle memory allocation, and more through interactive simulations.</p>
+            </a>
+            
+            <a href="manual.html" class="feature-card glass">
+                <div class="feature-icon">⚙️</div>
+                <h2 class="feature-title">Try With Your Data</h2>
+                <p class="feature-desc">Input your own custom datasets, build trees step-by-step, and watch the self-balancing algorithms in action.</p>
+            </a>
         </section>
     </main>
-
-    <script src="js/d3_visualizer.js"></script>
-    <script src="js/app.js"></script>
 </body>
 </html>
