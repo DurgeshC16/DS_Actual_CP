@@ -35,6 +35,7 @@ set(SOURCES
     src/RedBlackTree.cpp
     src/BTree.cpp
     src/BPlusTree.cpp
+    src/SplayTree.cpp
     src/DatasetGenerator.cpp
     src/MetricCollector.cpp
     src/BenchmarkRunner.cpp

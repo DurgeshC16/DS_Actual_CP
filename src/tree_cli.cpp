@@ -10,6 +10,7 @@
 #include "RedBlackTree.h"
 #include "BTree.h"
 #include "BPlusTree.h"
+#include "SplayTree.h"
 #include "Simulations.h" 
 
 using json = nlohmann::json;
@@ -52,14 +53,21 @@ int main(int argc, char* argv[]) {
     }
 
     std::unique_ptr<SearchTree> tree = nullptr;
+    int order = 3;
+    if (input_json.contains("order") && input_json["order"].is_number()) {
+        order = input_json["order"].get<int>();
+    }
+
     if (type == "avl") {
         tree = std::make_unique<AVLTree>();
     } else if (type == "rb") {
         tree = std::make_unique<RedBlackTree>();
     } else if (type == "btree") {
-        tree = std::make_unique<BTree>();
+        tree = std::make_unique<BTree>(order);
     } else if (type == "bplus") {
-        tree = std::make_unique<BPlusTree>();
+        tree = std::make_unique<BPlusTree>(order);
+    } else if (type == "splay") {
+        tree = std::make_unique<SplayTree>();
     }
 
     auto wrapMock = [](json mockTree) {
@@ -85,12 +93,15 @@ int main(int argc, char* argv[]) {
         std::cout << wrapMock(simulateExpressionTree(expr)).dump() << std::endl;
         return 0;
     } else if (type == "memory") {
-        std::cout << wrapMock(simulateMemoryAllocator(actions_vec)).dump() << std::endl;
+        std::cout << wrapMock(simulateMemoryAllocation(actions_vec)).dump() << std::endl;
+        return 0;
+    } else if (type == "database") {
+        std::cout << wrapMock(simulateDatabase(actions_vec)).dump() << std::endl;
         return 0;
     } else if (type == "network") {
         std::cout << wrapMock(simulateNetworkRouting(actions_vec)).dump() << std::endl;
         return 0;
-    } else if (type != "avl" && type != "rb" && type != "btree" && type != "bplus") {
+    } else if (type != "avl" && type != "rb" && type != "btree" && type != "bplus" && type != "splay") {
         fail("Unknown tree/simulation type: " + type);
     }
 

@@ -4,14 +4,17 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 
-// File System Simulation
+// Database Indexing Simulation (B+ Tree)
+nlohmann::json simulateDatabase(const std::vector<std::string>& actions);
+
+// File System Simulation (N-ary Tree)
 nlohmann::json simulateFileSystem(const std::vector<std::string>& actions);
 
-// Expression Tree Simulation
+// Expression Tree Simulation (AST)
 nlohmann::json simulateExpressionTree(const std::string& expression);
 
-// Memory Allocator Simulation (Best Fit / Worst Fit)
-nlohmann::json simulateMemoryAllocator(const std::vector<std::string>& actions);
+// Memory Allocator Simulation (AVL Tree)
+nlohmann::json simulateMemoryAllocation(const std::vector<std::string>& actions);
 
-// Network Routing Simulation (Dijkstra)
+// Network Routing Simulation
 nlohmann::json simulateNetworkRouting(const std::vector<std::string>& actions);

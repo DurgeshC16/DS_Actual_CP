@@ -13,6 +13,9 @@
     <ClCompile Include="C:\Programming\Second Year\SY DS-2\Actual CP\src\BPlusTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Programming\Second Year\SY DS-2\Actual CP\src\SplayTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\Programming\Second Year\SY DS-2\Actual CP\src\DatasetGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

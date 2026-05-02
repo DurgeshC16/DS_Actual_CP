@@ -4,16 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Real-World Applications - ADS Simulator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/navbar.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
-<body class="apps-page">
+<body>
     <nav class="navbar">
         <div class="nav-content">
             <div class="nav-logo">ADS Simulator</div>
             <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
                 <li><a href="performance.html">Performance Analysis</a></li>
                 <li><a href="applications.html" class="active">Real-World Applications</a></li>
                 <li><a href="manual.html">Try With Your Data</a></li>
@@ -21,97 +22,98 @@
         </div>
     </nav>
 
-    <div class="app-layout">
-        <aside class="app-sidebar">
-            <div class="sidebar-info">
-                <h3>Simulations</h3>
-                <p>Select a scenario to visualize data structure applications.</p>
-            </div>
-            <nav class="mode-selector">
-                <div class="nav-item-glass active" data-mode="database">
-                    <span class="icon">🗄️</span>
-                    <div class="item-text">
-                        <span class="label">Database Index</span>
-                        <span class="sub">B+ Tree Implementation</span>
+    <header>
+        <div class="header-content">
+            <h1>Real-World Scenarios</h1>
+            <p>Experience how advanced data structures solve complex engineering problems in production systems.</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <section class="card">
+                <h2>Simulations</h2>
+                <div class="control-group">
+                    <label>Scenario</label>
+                    <div id="mode-selector" class="sidebar-nav">
+                        <button class="nav-btn active" data-mode="sandbox">🧪 Interactive Sandbox</button>
+                        <button class="nav-btn" data-mode="database">🗄️ Database Indexing</button>
+                        <button class="nav-btn" data-mode="memory">💾 Memory Allocator</button>
+                        <button class="nav-btn" data-mode="filesystem">📁 File System</button>
+                        <button class="nav-btn" data-mode="expression">➕ Expression Parsing</button>
                     </div>
                 </div>
-                <div class="nav-item-glass" data-mode="search">
-                    <span class="icon">🔍</span>
-                    <div class="item-text">
-                        <span class="label">Search Engine</span>
-                        <span class="sub">AVL/RB Keyword Hashing</span>
+            </section>
+
+            <section class="card" id="dynamic-controls">
+                <!-- Controls injected by apps_logic.js -->
+                <h3>Controls</h3>
+                <div id="mode-controls-inner"></div>
+            </section>
+
+            <section class="card">
+                <h3>Operation Metrics</h3>
+                <div class="stat-row">
+                    <div class="stat-box">
+                        <div class="stat-label">Comparisons</div>
+                        <div class="stat-value" id="stat-ops">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Time</div>
+                        <div class="stat-value" id="stat-time">0ms</div>
                     </div>
                 </div>
-                <div class="nav-item-glass" data-mode="filesystem">
-                    <span class="icon">📁</span>
-                    <div class="item-text">
-                        <span class="label">File System</span>
-                        <span class="sub">N-ary Path Simulation</span>
+                <div class="stat-row" style="margin-top: 1rem;">
+                    <div class="stat-box">
+                        <div class="stat-label">Memory</div>
+                        <div class="stat-value" id="stat-mem">0 B</div>
                     </div>
                 </div>
-                <div class="nav-item-glass" data-mode="memory">
-                    <span class="icon">💾</span>
-                    <div class="item-text">
-                        <span class="label">Memory Allocator</span>
-                        <span class="sub">Best Fit / Worst Fit</span>
-                    </div>
-                </div>
-                <div class="nav-item-glass" data-mode="network">
-                    <span class="icon">🌐</span>
-                    <div class="item-text">
-                        <span class="label">Network Router</span>
-                        <span class="sub">Graph + Dijkstra Path</span>
-                    </div>
-                </div>
-                <div class="nav-item-glass" data-mode="expression">
-                    <span class="icon">➕</span>
-                    <div class="item-text">
-                        <span class="label">Expression Tree</span>
-                        <span class="sub">AST Math Parsing</span>
-                    </div>
-                </div>
-            </nav>
+            </section>
         </aside>
 
-        <main class="app-main">
-            <header class="app-header">
-                <div class="title-group">
-                    <h2 id="mode-title">Database Index Simulation</h2>
-                    <span class="complexity-badge" id="mode-complexity">O(log n)</span>
-                </div>
-                <div class="app-controls" id="mode-controls">
-                    <!-- Controls injected dynamically -->
-                </div>
-            </header>
-
-            <div class="app-workspace">
-                <div class="viz-card glass">
-                    <div id="d3-container" class="viz-canvas"></div>
-                </div>
-                
-                <div class="side-panel">
-                    <div class="stats-card glass">
-                        <h3>Metrics</h3>
-                        <div class="metric-row">
-                            <span>Operations:</span>
-                            <span id="stat-ops">0</span>
-                        </div>
-                        <div class="metric-row">
-                            <span>Time:</span>
-                            <span id="stat-time">0ms</span>
-                        </div>
-                    </div>
-                    
-                    <div class="logs-card glass">
-                        <h3>Operation Logs</h3>
-                        <div class="log-container" id="log-list">
-                            <div class="log-entry system">Ready. Select a mode to begin.</div>
-                        </div>
-                    </div>
+        <main class="main-content">
+            <div class="viz-area" id="d3-container">
+                <div class="viz-overlay">
+                    <div class="badge" id="mode-badge">Sandbox</div>
+                    <div class="badge" id="order-badge" style="display:none">Order: 3</div>
                 </div>
             </div>
+
+            <section class="card">
+                <h3>Execution Logs</h3>
+                <div class="log-panel" id="log-list">
+                    <div class="log-entry">> System initialized. Select a scenario to begin simulation.</div>
+                </div>
+            </section>
+
+            <section class="card info-panel">
+                <h3 id="mode-title">About this Simulation</h3>
+                <p id="knowledge-text">Use the sandbox to test structural properties of AVL, Red-Black, B-Trees, and Splay Trees.</p>
+            </section>
         </main>
     </div>
+
+    <style>
+        .sidebar-nav { display: flex; flex-direction: column; gap: 0.5rem; }
+        .nav-btn {
+            text-align: left;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { background: var(--bg-panel); }
+        .nav-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+    </style>
 
     <script src="js/d3_visualizer.js"></script>
     <script src="js/apps_logic.js"></script>

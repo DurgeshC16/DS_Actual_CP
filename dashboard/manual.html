@@ -5,16 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Try With Your Data - ADS Simulator</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/navbar.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="manual-page">
+<body>
     <nav class="navbar">
         <div class="nav-content">
             <div class="nav-logo">ADS Simulator</div>
             <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
                 <li><a href="performance.html">Performance Analysis</a></li>
                 <li><a href="applications.html">Real-World Applications</a></li>
                 <li><a href="manual.html" class="active">Try With Your Data</a></li>
@@ -22,87 +23,77 @@
         </div>
     </nav>
 
-    <div class="manual-layout">
-        <aside class="input-sidebar glass">
-            <h2>Dataset Input</h2>
-            <div class="input-group">
-                <label>Input Data (Comma/Space/New-line separated)</label>
-                <textarea id="raw-input" placeholder="e.g. 10, 50, 20, 30, 45, 12"></textarea>
-            </div>
-            
-            <div class="input-row">
-                <div class="input-group">
-                    <label>Tree Type</label>
-                    <select id="tree-select">
+    <header>
+        <div class="header-content">
+            <h1>Custom Dataset Benchmarking</h1>
+            <p>Input your own values and observe how different tree algorithms handle your specific data patterns.</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <section class="card">
+                <h2>Dataset Input</h2>
+                <div class="control-group">
+                    <label>Input Values (Comma separated)</label>
+                    <textarea id="raw-input" style="height: 100px; width:100%;" placeholder="e.g. 10, 50, 20, 30, 45, 12"></textarea>
+                </div>
+                <div class="control-group">
+                    <label>Target Tree</label>
+                    <select id="tree-select" onchange="toggleOrder()">
                         <option value="avl">AVL Tree</option>
                         <option value="rb">Red-Black Tree</option>
                         <option value="btree">B-Tree</option>
                         <option value="bplus">B+ Tree</option>
+                        <option value="splay">Splay Tree</option>
                     </select>
                 </div>
-                <div class="input-group">
-                    <label>Build Speed</label>
-                    <select id="speed-select">
-                        <option value="1000">Slow</option>
-                        <option value="500" selected>Medium</option>
-                        <option value="100">Fast</option>
-                    </select>
+                <div id="order-group" class="control-group" style="display:none">
+                    <label>Tree Order</label>
+                    <input type="number" id="manual-order" value="3" min="2" max="10">
                 </div>
-            </div>
+                <div class="btn-group">
+                    <button id="btn-build" class="primary">Build Tree</button>
+                    <button id="btn-compare" class="primary">Compare All</button>
+                </div>
+                <div class="btn-group" style="margin-top: 0.5rem;">
+                    <button id="btn-clear-manual" class="danger">Clear Data</button>
+                </div>
+            </section>
 
-            <div class="action-buttons">
-                <button id="btn-build" class="primary">Build Tree Step-by-Step</button>
-                <button id="btn-compare">Compare All Trees</button>
-                <button id="btn-clear-manual">Clear Workspace</button>
-            </div>
-
-            <div class="history-panel">
-                <h3>Recent Datasets</h3>
-                <ul id="history-list">
-                    <!-- History entries -->
-                </ul>
-            </div>
+            <section class="card">
+                <h3>Build Stats</h3>
+                <div class="best-performers">
+                    <ul>
+                        <li><span>Nodes:</span> <span id="stat-nodes">0</span></li>
+                        <li><span>Height:</span> <span id="stat-height">0</span></li>
+                        <li><span>Comparisons:</span> <span id="stat-comps">0</span></li>
+                        <li><span>Struct Ops:</span> <span id="stat-rot">0</span></li>
+                    </ul>
+                </div>
+            </section>
         </aside>
 
-        <main class="manual-main">
-            <div class="viz-area glass">
-                <div id="d3-container" class="viz-canvas"></div>
-                <div class="canvas-controls">
-                    <button id="btn-export-json">Export JSON</button>
-                    <button id="btn-snapshot">Snapshot (PNG)</button>
+        <main class="main-content">
+            <div class="viz-area" id="d3-container">
+                <div class="viz-overlay">
+                    <div class="badge" id="order-badge" style="display:none">Order: 3</div>
                 </div>
             </div>
 
-            <div class="stats-area">
-                <div class="stats-grid">
-                    <div class="stat-box glass">
-                        <span class="stat-label">Nodes</span>
-                        <span id="stat-nodes" class="stat-val">0</span>
-                    </div>
-                    <div class="stat-box glass">
-                        <span class="stat-label">Height</span>
-                        <span id="stat-height" class="stat-val">0</span>
-                    </div>
-                    <div class="stat-box glass">
-                        <span class="stat-label">Comps</span>
-                        <span id="stat-comps" class="stat-val">0</span>
-                    </div>
-                    <div class="stat-box glass">
-                        <span class="stat-label">Rotations</span>
-                        <span id="stat-rot" class="stat-val">0</span>
-                    </div>
-                </div>
-
-                <div class="comparison-chart glass">
-                    <h3>Cross-Tree Comparison</h3>
-                    <div class="chart-wrapper">
-                        <canvas id="manual-chart"></canvas>
-                    </div>
-                </div>
+            <div class="chart-container" style="height: 300px;">
+                <h3>Dataset Complexity Analysis</h3>
+                <canvas id="manual-chart"></canvas>
             </div>
         </main>
     </div>
 
+    <script>
+        function toggleOrder() {
+            const val = document.getElementById('tree-select').value;
+            document.getElementById('order-group').style.display = (val === 'btree' || val === 'bplus') ? 'block' : 'none';
+        }
+    </script>
     <script src="js/d3_visualizer.js"></script>
     <script src="js/manual_logic.js"></script>
 </body>

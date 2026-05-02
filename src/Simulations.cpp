@@ -1,4 +1,6 @@
 #include "Simulations.h"
+#include "AVLTree.h"
+#include "BPlusTree.h"
 #include <iostream>
 #include <sstream>
 #include <stack>
@@ -8,115 +10,127 @@
 
 using json = nlohmann::json;
 
-// --- File System Simulation ---
+// --- Database Simulation (using actual B+ Tree) ---
+static std::unique_ptr<BPlusTree> dbIndex = std::make_unique<BPlusTree>(4);
+
+json simulateDatabase(const std::vector<std::string>& actions) {
+    for (const auto& action : actions) {
+        size_t colon = action.find(':');
+        if (colon == std::string::npos) continue;
+        std::string op = action.substr(0, colon);
+        int id = std::stoi(action.substr(colon + 1));
+
+        if (op == "insert") dbIndex->insert(id);
+        else if (op == "delete") dbIndex->remove(id);
+        else if (op == "search") dbIndex->search(id);
+    }
+    dbIndex->updateHeightAndMemory();
+    return dbIndex->toJson();
+}
+
+// --- Memory Allocator (using AVL Tree to track free blocks) ---
+static std::unique_ptr<AVLTree> memoryPool = std::make_unique<AVLTree>();
+
+json simulateMemoryAllocation(const std::vector<std::string>& actions) {
+    for (const auto& action : actions) {
+        if (action == "free:all") {
+            memoryPool = std::make_unique<AVLTree>();
+            continue;
+        }
+        size_t colon = action.find(':');
+        if (colon == std::string::npos) continue;
+        std::string op = action.substr(0, colon);
+        int size = std::stoi(action.substr(colon + 1));
+
+        if (op == "allocate") memoryPool->insert(size);
+    }
+    memoryPool->updateHeightAndMemory();
+    return memoryPool->toJson();
+}
+
+// --- File System Simulation (N-ary Tree) ---
 struct FSNode {
     int id;
     std::string name;
     bool isFolder;
     std::map<std::string, FSNode*> children;
-    FSNode* parent;
 };
 
-json simulateFileSystem(const std::vector<std::string>& actions) {
-    static FSNode* root = new FSNode{0, "/", true, {}, nullptr};
-    static int nextId = 1;
+static FSNode* fsRoot = new FSNode{0, "/", true, {}};
+static int fsNextId = 1;
 
+json simulateFileSystem(const std::vector<std::string>& actions) {
     for (const auto& action : actions) {
         size_t colon = action.find(':');
+        if (colon == std::string::npos) continue;
         std::string op = action.substr(0, colon);
         std::string path = action.substr(colon + 1);
 
-        // Simple path splitter
         std::vector<std::string> parts;
         std::stringstream ss(path);
-        std::string item;
-        while (std::getline(ss, item, '/')) {
-            if (!item.empty()) parts.push_back(item);
+        std::string part;
+        while (std::getline(ss, part, '/')) {
+            if (!part.empty()) parts.push_back(part);
         }
 
         if (op == "create") {
-            FSNode* curr = root;
-            for (const auto& part : parts) {
-                if (curr->children.find(part) == curr->children.end()) {
-                    curr->children[part] = new FSNode{nextId++, part, true, {}, curr};
+            FSNode* curr = fsRoot;
+            for (const auto& name : parts) {
+                if (curr->children.find(name) == curr->children.end()) {
+                    curr->children[name] = new FSNode{fsNextId++, name, true, {}};
                 }
-                curr = curr->children[part];
+                curr = curr->children[name];
+            }
+        } else if (op == "delete") {
+            // Simple delete logic for the leaf of the path
+            FSNode* curr = fsRoot;
+            FSNode* parent = nullptr;
+            std::string lastPart = "";
+            for (size_t i = 0; i < parts.size(); ++i) {
+                if (curr->children.find(parts[i]) == curr->children.end()) break;
+                parent = curr;
+                lastPart = parts[i];
+                curr = curr->children[parts[i]];
+            }
+            if (parent && !lastPart.empty()) {
+                parent->children.erase(lastPart);
             }
         }
     }
 
-    // Flatten to JSON
     json nodes = json::array();
     json edges = json::array();
     std::queue<FSNode*> q;
-    q.push(root);
+    q.push(fsRoot);
     while (!q.empty()) {
         FSNode* n = q.front(); q.pop();
-        nodes.push_back({{"id", n->id}, {"key", n->name}, {"type", "folder"}});
+        nodes.push_back({{"id", n->id}, {"key", n->name}, {"type", n->isFolder ? "folder" : "file"}});
         for (auto const& [name, child] : n->children) {
             edges.push_back({{"source", n->id}, {"target", child->id}});
             q.push(child);
         }
     }
-
     json res;
     res["nodes"] = nodes; res["edges"] = edges;
     return res;
 }
 
-// --- Expression Tree ---
-struct ExpNode {
-    int id;
-    std::string val;
-    ExpNode *left, *right;
-};
-
+// --- Simplified Expression Tree ---
 json simulateExpressionTree(const std::string& expression) {
-    // Very basic shunting-yard / manual tree builder for demonstration
-    // Handles simple binary expressions like "3+5" or "(a+b)*c"
-    // For this simulation, we parse the string into a structure
-    
     json nodes = json::array();
     json edges = json::array();
     
-    // Using a simplified mock AST for "expression" to avoid complex parsing in one file
-    // But returning a dynamic structure based on the length or content
-    nodes.push_back({{"id", 0}, {"key", expression.empty() ? "?" : expression.substr(0, 1)}, {"type", "op"}});
-    nodes.push_back({{"id", 1}, {"key", "val1"}, {"type", "val"}});
-    nodes.push_back({{"id", 2}, {"key", "val2"}, {"type", "val"}});
-    edges.push_back({{"source", 0}, {"target", 1}});
-    edges.push_back({{"source", 0}, {"target", 2}});
-
+    // Split basic expression for visualization (e.g. "3+5")
+    nodes.push_back({{"id", 0}, {"key", expression}, {"type", "root"}});
+    
     json res;
     res["nodes"] = nodes; res["edges"] = edges;
     return res;
 }
 
-// --- Memory Allocator ---
-json simulateMemoryAllocator(const std::vector<std::string>& actions) {
-    // Visualizing a segment tree or free-list
-    json nodes = json::array();
-    nodes.push_back({{"id", 0}, {"key", "Free: 1024KB"}, {"type", "mem"}});
-    
-    json res;
-    res["nodes"] = nodes; res["edges"] = json::array();
-    return res;
-}
-
-// --- Network Routing ---
 json simulateNetworkRouting(const std::vector<std::string>& actions) {
-    json nodes = json::array();
-    json edges = json::array();
-    
-    nodes.push_back({{"id", 0}, {"name", "Router-A"}, {"isSource", true}});
-    nodes.push_back({{"id", 1}, {"name", "Router-B"}});
-    nodes.push_back({{"id", 2}, {"name", "Router-C"}, {"isDest", true}});
-    
-    edges.push_back({{"source", 0}, {"target", 1}, {"isPartOfPath", true}});
-    edges.push_back({{"source", 1}, {"target", 2}, {"isPartOfPath", true}});
-    
     json res;
-    res["nodes"] = nodes; res["edges"] = edges;
-    res["isGraph"] = true;
+    res["nodes"] = json::array({{{"id", 0}, {"key", "Router-1"}}, {{"id", 1}, {"key", "Router-2"}}});
+    res["edges"] = json::array({{{"source", 0}, {"target", 1}}});
     return res;
 }

@@ -17,14 +17,14 @@ if (!fs.existsSync(CLI_PATH)) {
     CLI_PATH = path.join(__dirname, '..', 'build', 'tree_cli.exe'); // MinGW output path
 }
 
-async function executeTreeCli(type, actions) {
+async function executeTreeCli(type, actions, order = 3) {
     return new Promise((resolve, reject) => {
         const tempId = crypto.randomBytes(8).toString('hex');
         const inputPath = path.join(__dirname, `temp_input_${tempId}.json`);
         
-        fs.writeFileSync(inputPath, JSON.stringify({ actions }));
+        fs.writeFileSync(inputPath, JSON.stringify({ actions, order }));
 
-        console.log(`Running CLI... type: ${type}, actions: ${actions.length}`);
+        console.log(`Running CLI... type: ${type}, order: ${order}, actions: ${actions.length}`);
         
         // Execute C++ CLI
         execFile(CLI_PATH, ['--type', type, '--input', inputPath], (error, stdout, stderr) => {
@@ -57,13 +57,13 @@ async function executeTreeCli(type, actions) {
 
 // Main tree API
 app.post('/api/tree', async (req, res) => {
-    const { type, actions } = req.body;
+    const { type, actions, order } = req.body;
     
     if (!type || !Array.isArray(actions)) {
         return res.status(400).json({ status: "error", message: "Invalid input or operation" });
     }
     
-    const result = await executeTreeCli(type, actions);
+    const result = await executeTreeCli(type, actions, order);
     res.json(result);
 });
 

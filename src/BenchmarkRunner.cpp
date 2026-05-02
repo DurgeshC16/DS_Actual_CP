@@ -3,6 +3,7 @@
 #include "RedBlackTree.h"
 #include "BTree.h"
 #include "BPlusTree.h"
+#include "SplayTree.h"
 #include <chrono>
 #include <iostream>
 
@@ -11,8 +12,9 @@ BenchmarkRunner::BenchmarkRunner() {}
 std::unique_ptr<SearchTree> BenchmarkRunner::createTree(const std::string& name) {
     if (name == "AVL") return std::make_unique<AVLTree>();
     if (name == "Red-Black") return std::make_unique<RedBlackTree>();
-    if (name == "B-Tree") return std::make_unique<BTree>(3);
-    if (name == "B+ Tree") return std::make_unique<BPlusTree>(4);
+    if (name == "B-Tree") return std::make_unique<BTree>(bTreeOrder);
+    if (name == "B+ Tree") return std::make_unique<BPlusTree>(bPlusTreeOrder);
+    if (name == "Splay") return std::make_unique<SplayTree>();
     return nullptr;
 }
 

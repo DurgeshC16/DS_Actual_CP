@@ -301,6 +301,44 @@ button:hover {
   height: 250px;
 }
 
+/* Tables */
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th, td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+th:hover {
+  background: var(--border);
+  color: var(--text-primary);
+}
+
+tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
 /* D3.js Styles */
 .node circle {
   fill: var(--bg-primary);
@@ -315,4 +353,20 @@ button:hover {
   fill: none;
   stroke: var(--border);
   stroke-width: 1.5px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
 }

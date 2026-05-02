@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Performance Analysis - Data Structures</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/navbar.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -14,6 +14,7 @@
         <div class="nav-content">
             <div class="nav-logo">ADS Simulator</div>
             <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
                 <li><a href="performance.html" class="active">Performance Analysis</a></li>
                 <li><a href="applications.html">Real-World Applications</a></li>
                 <li><a href="manual.html">Try With Your Data</a></li>
@@ -24,118 +25,108 @@
     <header>
         <div class="header-content">
             <h1>Tree Performance Analysis</h1>
-            <p>Interactive self-balancing search tree benchmarking</p>
+            <p>Benchmarking AVL, Red-Black, B-Tree, B+ Tree, and Splay Tree performance across various datasets.</p>
         </div>
     </header>
 
     <div class="container">
         <aside class="sidebar">
-            <div class="controls-panel">
+            <section class="card">
                 <h2>Filters</h2>
                 <div class="control-group">
-                    <label for="operationSelect">Operation:</label>
-                    <div class="select-wrapper">
-                        <select id="operationSelect">
-                            <option value="Insert">Insert</option>
-                            <option value="Search">Search</option>
-                            <option value="Delete">Delete</option>
-                            <option value="Range Query">Range Query</option>
-                            <option value="Traversal">Traversal</option>
-                        </select>
-                    </div>
+                    <label>Benchmark Operation</label>
+                    <select id="operationSelect">
+                        <option value="Insert">Insert</option>
+                        <option value="Search">Search</option>
+                        <option value="Delete">Delete</option>
+                        <option value="Range Query">Range Query</option>
+                        <option value="Traversal">Traversal</option>
+                    </select>
                 </div>
                 <div class="control-group">
-                    <label for="datasetSelect">Dataset Type:</label>
-                    <div class="select-wrapper">
-                        <select id="datasetSelect">
-                            <option value="Random">Random</option>
-                            <option value="Sorted">Sorted</option>
-                            <option value="Reverse Sorted">Reverse Sorted</option>
-                            <option value="Skewed">Skewed</option>
-                            <option value="Real-world">Real-world</option>
-                        </select>
-                    </div>
+                    <label>Dataset Pattern</label>
+                    <select id="datasetSelect">
+                        <option value="Random">Random</option>
+                        <option value="Sorted">Sorted</option>
+                        <option value="Reverse Sorted">Reverse Sorted</option>
+                        <option value="Skewed">Skewed</option>
+                        <option value="Real-world">Real-world</option>
+                    </select>
                 </div>
                 <div class="control-group">
-                    <label for="sizeSelect">Input Size:</label>
-                    <div class="select-wrapper">
-                        <select id="sizeSelect">
-                            <option value="1000">1K (1,000)</option>
-                            <option value="10000">10K (10,000)</option>
-                            <option value="100000">100K (100,000)</option>
-                        </select>
-                    </div>
+                    <label>Input Size (Elements)</label>
+                    <select id="sizeSelect">
+                        <option value="1000">1,000</option>
+                        <option value="10000">10,000</option>
+                        <option value="100000" selected>100,000</option>
+                    </select>
                 </div>
-            </div>
+            </section>
 
-            <div class="best-performers" id="bestPerformersBox">
+            <section class="card best-performers">
                 <h3>🏆 Best Performers</h3>
                 <ul id="winnersList">
-                    <!-- Populated dynamically via JS -->
+                    <!-- Dynamic -->
                 </ul>
-            </div>
+            </section>
+
+            <section class="card">
+                <h3>System Status</h3>
+                <p id="status-text" style="font-size: 0.8rem; color: var(--text-muted);">
+                    Data loaded successfully. Select filters to update graphs.
+                </p>
+            </section>
         </aside>
 
-        <main class="dashboard-content">
-            <div class="chart-row">
+        <main class="main-content">
+            <div class="chart-grid">
                 <div class="chart-container">
-                    <h3>Execution Time vs Input Size</h3>
+                    <h3>Execution Time vs Input Size (ms)</h3>
                     <canvas id="timeChart"></canvas>
                 </div>
                 <div class="chart-container">
-                    <h3>Rotations / Splits / Recolorings</h3>
+                    <h3>Structural Operations (Splits/Rotations)</h3>
                     <canvas id="rotationsChart"></canvas>
                 </div>
-            </div>
-            <div class="chart-row">
                 <div class="chart-container">
                     <h3>Tree Height Growth vs N</h3>
                     <canvas id="heightChart"></canvas>
                 </div>
                 <div class="chart-container">
-                    <h3>Key Comparisons</h3>
+                    <h3>Key Comparisons Count</h3>
                     <canvas id="comparisonsChart"></canvas>
                 </div>
-            </div>
-            <div class="chart-row">
-                <div class="chart-container half">
-                    <h3>Memory Usage per Node</h3>
+                <div class="chart-container">
+                    <h3>Memory Usage per Node (Bytes)</h3>
                     <canvas id="memoryChart"></canvas>
                 </div>
-                <div class="chart-container half">
-                    <h3>Traversal Time</h3>
-                    <canvas id="traversalChart"></canvas>
-                </div>
-            </div>
-            <div class="chart-row">
                 <div class="chart-container">
-                    <h3>Range Query Time</h3>
+                    <h3>Secondary Metric (ms)</h3>
                     <canvas id="specialChart"></canvas>
                 </div>
             </div>
-            
-            <div class="table-container">
-                <h3>Raw Metric Data</h3>
+
+            <section class="table-container">
+                <h3>Detailed Benchmark Metrics</h3>
                 <div class="table-wrapper">
                     <table id="metricsTable">
                         <thead>
                             <tr>
-                                <th onclick="sortTable(0)">Tree</th>
+                                <th onclick="sortTable(0)">Tree Type</th>
                                 <th onclick="sortTable(1)">Operation</th>
-                                <th onclick="sortTable(2)">Dataset</th>
-                                <th onclick="sortTable(3)">Size</th>
-                                <th onclick="sortTable(4)">Time (ms)</th>
-                                <th onclick="sortTable(5)">Struct Ops</th>
-                                <th onclick="sortTable(6)">Height</th>
-                                <th onclick="sortTable(7)">Comps</th>
+                                <th onclick="sortTable(2)">Size</th>
+                                <th onclick="sortTable(3)">Time (ms)</th>
+                                <th onclick="sortTable(4)">Structural Ops</th>
+                                <th onclick="sortTable(5)">Height</th>
+                                <th onclick="sortTable(6)">Comparisons</th>
                             </tr>
                         </thead>
                         <tbody id="metricsTableBody">
-                            <!-- Populated dynamically -->
+                            <!-- Dynamic -->
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </section>
         </main>
     </div>
 

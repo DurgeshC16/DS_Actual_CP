@@ -5,6 +5,7 @@
 #include <vector>
 
 int main(int argc, char* argv[]) {
+    std::cerr << "Main started" << std::endl;
     std::vector<std::string> args(argv, argv + argc);
     bool interactive = false;
 

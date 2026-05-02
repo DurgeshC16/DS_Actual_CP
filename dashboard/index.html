@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ADS Simulator - Home</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/navbar.css">
     <style>
         .hero {
@@ -15,7 +15,7 @@
             justify-content: center;
             text-align: center;
             padding: 5rem 2rem 3rem;
-            background: radial-gradient(circle at center top, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
+            background: radial-gradient(circle at center top, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
         }
         .hero h1 {
             font-size: 3.5rem;
@@ -27,7 +27,7 @@
         }
         .hero p {
             font-size: 1.25rem;
-            color: var(--text-secondary);
+            color: var(--text-muted);
             max-width: 600px;
             margin-bottom: 3rem;
         }
@@ -48,22 +48,14 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            background-color: var(--bg-panel);
+            border-radius: 12px;
+            border: 1px solid var(--border);
         }
         .feature-card:hover {
             transform: translateY(-5px);
             border-color: var(--accent);
             box-shadow: 0 10px 30px rgba(59, 130, 246, 0.15);
-        }
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 70%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .feature-card:hover::before {
-            opacity: 1;
         }
         .feature-icon {
             font-size: 3rem;
@@ -73,20 +65,21 @@
             font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 1rem;
-            color: var(--text-primary);
+            color: var(--text-main);
         }
         .feature-desc {
-            color: var(--text-secondary);
+            color: var(--text-muted);
             line-height: 1.6;
             flex: 1;
         }
     </style>
 </head>
-<body class="landing-page" style="overflow: auto;">
+<body class="landing-page">
     <nav class="navbar">
         <div class="nav-content">
             <div class="nav-logo">ADS Simulator</div>
             <ul class="nav-links">
+                <li><a href="index.html" class="active">Home</a></li>
                 <li><a href="performance.html">Performance Analysis</a></li>
                 <li><a href="applications.html">Real-World Applications</a></li>
                 <li><a href="manual.html">Try With Your Data</a></li>
@@ -101,19 +94,19 @@
         </section>
 
         <section class="feature-grid">
-            <a href="performance.html" class="feature-card glass">
+            <a href="performance.html" class="feature-card">
                 <div class="feature-icon">📊</div>
                 <h2 class="feature-title">Performance Analysis</h2>
                 <p class="feature-desc">Compare execution times, memory usage, and structural operations across different tree algorithms using large datasets.</p>
             </a>
             
-            <a href="applications.html" class="feature-card glass">
+            <a href="applications.html" class="feature-card">
                 <div class="feature-icon">🌍</div>
                 <h2 class="feature-title">Real-World Applications</h2>
                 <p class="feature-desc">See how B+ Trees power databases, how AVL trees handle memory allocation, and more through interactive simulations.</p>
             </a>
             
-            <a href="manual.html" class="feature-card glass">
+            <a href="manual.html" class="feature-card">
                 <div class="feature-icon">⚙️</div>
                 <h2 class="feature-title">Try With Your Data</h2>
                 <p class="feature-desc">Input your own custom datasets, build trees step-by-step, and watch the self-balancing algorithms in action.</p>

@@ -304,6 +304,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="C:\Programming\Second Year\SY DS-2\Actual CP\src\RedBlackTree.cpp" />
     <ClCompile Include="C:\Programming\Second Year\SY DS-2\Actual CP\src\BTree.cpp" />
     <ClCompile Include="C:\Programming\Second Year\SY DS-2\Actual CP\src\BPlusTree.cpp" />
+    <ClCompile Include="C:\Programming\Second Year\SY DS-2\Actual CP\src\SplayTree.cpp" />
     <ClCompile Include="C:\Programming\Second Year\SY DS-2\Actual CP\src\DatasetGenerator.cpp" />
     <ClCompile Include="C:\Programming\Second Year\SY DS-2\Actual CP\src\MetricCollector.cpp" />
     <ClCompile Include="C:\Programming\Second Year\SY DS-2\Actual CP\src\BenchmarkRunner.cpp" />

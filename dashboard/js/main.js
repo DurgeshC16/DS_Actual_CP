@@ -1,8 +1,9 @@
 const colors = {
-    'AVL': '#3b82f6',        // Blue
-    'Red-Black': '#ef4444',  // Red
-    'B-Tree': '#10b981',     // Green
-    'B+ Tree': '#f59e0b'     // Yellow
+    'AVL': '#3b82f6',
+    'Red-Black': '#ef4444',
+    'B-Tree': '#10b981',
+    'B+ Tree': '#f59e0b',
+    'Splay': '#a78bfa'
 };
 
 let rawData = [];
@@ -17,13 +18,13 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(err => {
             console.error('Error loading metrics.json:', err);
-            document.getElementById('winnersList').innerHTML = '<li>Error loading data. Run TreeAnalyzer first.</li>';
+            const winners = document.getElementById('winnersList');
+            if (winners) winners.innerHTML = '<li>Status: No Data Loaded</li>';
         });
 
-    // Add event listeners
-    document.getElementById('operationSelect').addEventListener('change', updateDashboard);
-    document.getElementById('datasetSelect').addEventListener('change', updateDashboard);
-    document.getElementById('sizeSelect').addEventListener('change', updateDashboard);
+    document.getElementById('operationSelect')?.addEventListener('change', updateDashboard);
+    document.getElementById('datasetSelect')?.addEventListener('change', updateDashboard);
+    document.getElementById('sizeSelect')?.addEventListener('change', updateDashboard);
 });
 
 function initializeDashboard() {
@@ -36,141 +37,127 @@ function updateDashboard() {
     const dataset = document.getElementById('datasetSelect').value;
     const size = parseInt(document.getElementById('sizeSelect').value);
 
-    // Filter data for charts showing "vs Size"
-    const sizeData = rawData.filter(d => d.operation === operation && d.dataset === dataset);
-    
-    // Filter data for current specific selection
-    const currentData = sizeData.filter(d => d.inputSize === size);
+    // Filter data for the specific operation and dataset
+    const opDatasetData = rawData.filter(d => d.operation === operation && d.dataset === dataset);
+    // Data for all trees at the current selected size
+    const currentSizeData = opDatasetData.filter(d => d.inputSize === size);
 
-    updateCharts(sizeData, currentData, operation);
-    populateTable(currentData);
+    updateCharts(opDatasetData, currentSizeData, operation);
+    populateTable(currentSizeData);
+    
+    // Update Insight text
+    const bestTimeTree = currentSizeData.length > 0 ? 
+        currentSizeData.reduce((prev, curr) => (prev.executionTimeMs < curr.executionTimeMs) ? prev : curr).tree : 'N/A';
+    
+    const insight = document.getElementById('status-text');
+    if (insight) {
+        insight.innerText = `At size ${size}, ${bestTimeTree} performed best for ${operation}.`;
+    }
 }
 
-function updateCharts(sizeData, currentData, operation) {
-    const trees = ['AVL', 'Red-Black', 'B-Tree', 'B+ Tree'];
+function updateCharts(opDatasetData, currentSizeData, operation) {
+    const trees = ['AVL', 'Red-Black', 'B-Tree', 'B+ Tree', 'Splay'];
     const sizes = [1000, 10000, 100000];
 
-    // 1. Time Chart (Line - Time vs Size)
-    const timeChartCtx = document.getElementById('timeChart').getContext('2d');
-    const timeChartData = {
-        labels: sizes,
+    // 1. Time vs Size (Line Chart)
+    const timeData = {
+        labels: sizes.map(s => s >= 1000 ? (s/1000) + 'K' : s),
         datasets: trees.map(tree => ({
             label: tree,
             data: sizes.map(s => {
-                const b = sizeData.find(d => d.tree === tree && d.inputSize === s);
-                return b ? b.executionTimeMs : 0;
+                const d = opDatasetData.find(x => x.tree === tree && x.inputSize === s);
+                return d ? d.executionTimeMs : 0;
             }),
             borderColor: colors[tree],
-            backgroundColor: `${colors[tree]}33`,
-            tension: 0.1,
-            fill: false
+            backgroundColor: `${colors[tree]}22`,
+            borderWidth: 2,
+            tension: 0.3,
+            fill: true
         }))
     };
-    buildChart('time', 'line', timeChartCtx, timeChartData, 'Time (ms)');
+    buildChart('time', 'line', 'timeChart', timeData, 'Time (ms)');
 
-    // 2. Rotations/Splits Chart (Bar - Current Data)
-    const rotChartCtx = document.getElementById('rotationsChart').getContext('2d');
-    const structLabels = ['AVL', 'Red-Black', 'B-Tree', 'B+ Tree'];
+    // 2. Structural Ops (Bar Chart for current size)
     const structData = {
-        labels: structLabels,
+        labels: trees,
         datasets: [{
-            label: 'Structural Ops (Rotations/Splits/Recolors)',
-            data: structLabels.map(tree => {
-                const b = currentData.find(d => d.tree === tree);
-                if (!b) return 0;
-                return b.singleRotations + b.doubleRotations * 2 + b.recolorings + b.splits;
+            label: 'Total Structural Ops',
+            data: trees.map(tree => {
+                const d = currentSizeData.find(x => x.tree === tree);
+                if (!d) return 0;
+                return (d.singleRotations || 0) + (d.doubleRotations || 0) * 2 + (d.recolorings || 0) + (d.splits || 0);
             }),
-            backgroundColor: structLabels.map(t => colors[t])
+            backgroundColor: trees.map(t => colors[t])
         }]
     };
-    buildChart('rotations', 'bar', rotChartCtx, structData, 'Count');
+    buildChart('rotations', 'bar', 'rotationsChart', structData, 'Count');
 
-    // 3. Height Chart (Line - Height vs Size)
-    const heightChartCtx = document.getElementById('heightChart').getContext('2d');
-    const heightChartData = {
-        labels: sizes,
+    // 3. Height vs Size (Line Chart)
+    const heightData = {
+        labels: sizes.map(s => (s/1000) + 'K'),
         datasets: trees.map(tree => ({
             label: tree,
             data: sizes.map(s => {
-                const b = sizeData.find(d => d.tree === tree && d.inputSize === s);
-                return b ? b.maxHeight : 0;
+                const d = opDatasetData.find(x => x.tree === tree && x.inputSize === s);
+                return d ? d.maxHeight : 0;
             }),
             borderColor: colors[tree],
-            tension: 0.1,
-            fill: false
+            tension: 0.3
         }))
     };
-    buildChart('height', 'line', heightChartCtx, heightChartData, 'Max Depth');
+    buildChart('height', 'line', 'heightChart', heightData, 'Depth');
 
-    // 4. Comparisons Chart (Bar - Current Data)
-    const compChartCtx = document.getElementById('comparisonsChart').getContext('2d');
+    // 4. Key Comparisons (Bar Chart)
     const compData = {
-        labels: structLabels,
+        labels: trees,
         datasets: [{
-            label: 'Key Comparisons',
-            data: structLabels.map(tree => {
-                const b = currentData.find(d => d.tree === tree);
-                return b ? b.comparisons : 0;
+            label: 'Comparisons',
+            data: trees.map(tree => {
+                const d = currentSizeData.find(x => x.tree === tree);
+                return d ? d.comparisons : 0;
             }),
-            backgroundColor: structLabels.map(t => colors[t])
+            backgroundColor: trees.map(t => colors[t])
         }]
     };
-    buildChart('comparisons', 'bar', compChartCtx, compData, 'Count');
-    
-    // 5. Memory Chart (Bar - Current Data)
-    const memChartCtx = document.getElementById('memoryChart').getContext('2d');
+    buildChart('comparisons', 'bar', 'comparisonsChart', compData, 'Count');
+
+    // 5. Memory Usage (Bar Chart)
     const memData = {
-        labels: structLabels,
+        labels: trees,
         datasets: [{
-            label: 'Memory Bytes',
-            data: structLabels.map(tree => {
-                const b = currentData.find(d => d.tree === tree);
-                return b ? b.memoryBytes : 0;
+            label: 'Bytes per Node',
+            data: trees.map(tree => {
+                const d = currentSizeData.find(x => x.tree === tree);
+                return d ? d.memoryBytes : 0;
             }),
-            backgroundColor: structLabels.map(t => colors[t])
+            backgroundColor: trees.map(t => colors[t])
         }]
     };
-    buildChart('memory', 'bar', memChartCtx, memData, 'Bytes');
+    buildChart('memory', 'bar', 'memoryChart', memData, 'Bytes');
 
-    // 6. Traversal Chart (Bar)
-    const travChartCtx = document.getElementById('traversalChart').getContext('2d');
-    const travData = {
-        labels: structLabels,
+    // 6. Secondary (Range Query or Traversal)
+    const secondaryOp = (operation === 'Insert' || operation === 'Search') ? 'Traversal' : 'Range Query';
+    const secondaryData = {
+        labels: trees,
         datasets: [{
-            label: 'Traversal Time (ms)',
-            data: structLabels.map(tree => {
-                const b = rawData.find(d => d.tree === tree && d.dataset === currentData[0]?.dataset && d.inputSize === currentData[0]?.inputSize && d.operation === 'Traversal');
-                return b ? b.traversalTimeMs : 0;
+            label: `${secondaryOp} Time`,
+            data: trees.map(tree => {
+                const d = rawData.find(x => x.tree === tree && x.operation === secondaryOp && x.inputSize === (currentSizeData[0]?.inputSize || 1000));
+                return d ? d.executionTimeMs : 0;
             }),
-            backgroundColor: structLabels.map(t => colors[t])
+            backgroundColor: trees.map(t => colors[t])
         }]
     };
-    buildChart('traversal', 'bar', travChartCtx, travData, 'Time (ms)');
-
-    // 7. Range Query Chart (Bar)
-    const rqChartCtx = document.getElementById('specialChart').getContext('2d');
-    const rqData = {
-        labels: structLabels,
-        datasets: [{
-            label: 'Range Query Time (ms)',
-            data: structLabels.map(tree => {
-                const b = rawData.find(d => d.tree === tree && d.dataset === currentData[0]?.dataset && d.inputSize === currentData[0]?.inputSize && d.operation === 'Range Query');
-                return b ? b.rangeQueryTimeMs : 0;
-            }),
-            backgroundColor: structLabels.map(t => colors[t])
-        }]
-    };
-    buildChart('special', 'bar', rqChartCtx, rqData, 'Time (ms)');
+    buildChart('special', 'bar', 'specialChart', secondaryData, 'Time (ms)');
 }
 
-function buildChart(id, type, ctx, data, yTitle) {
-    if (charts[id]) {
-        charts[id].destroy();
-    }
+function buildChart(id, type, canvasId, data, yTitle) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
     
-    Chart.defaults.color = '#94a3b8';
-    Chart.defaults.borderColor = '#475569';
-
+    if (charts[id]) charts[id].destroy();
+    
     charts[id] = new Chart(ctx, {
         type: type,
         data: data,
@@ -178,35 +165,35 @@ function buildChart(id, type, ctx, data, yTitle) {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                x: {
-                    grid: { color: type === 'line' ? '#334155' : 'transparent' }
-                },
-                y: {
-                    title: { display: true, text: yTitle },
-                    grid: { color: '#334155' }
+                x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+                y: { 
+                    title: { display: true, text: yTitle, color: '#94a3b8' },
+                    grid: { color: '#334155' },
+                    ticks: { color: '#94a3b8' }
                 }
             },
             plugins: {
-                legend: {
-                    display: type === 'line' || data.datasets.length > 1
+                legend: { 
+                    display: type === 'line',
+                    labels: { color: '#f8fafc', boxWidth: 12, usePointStyle: true }
                 }
             }
         }
     });
 }
 
-function populateTable(currentData) {
+function populateTable(currentSizeData) {
     const tbody = document.getElementById('metricsTableBody');
+    if (!tbody) return;
     tbody.innerHTML = '';
 
-    currentData.forEach(d => {
+    currentSizeData.forEach(d => {
         const tr = document.createElement('tr');
-        const structOps = d.singleRotations + d.doubleRotations * 2 + d.recolorings + d.splits;
+        const structOps = (d.singleRotations || 0) + (d.doubleRotations || 0) * 2 + (d.recolorings || 0) + (d.splits || 0);
         
         tr.innerHTML = `
-            <td>${d.tree}</td>
+            <td><strong style="color:${colors[d.tree]}">${d.tree}</strong></td>
             <td>${d.operation}</td>
-            <td>${d.dataset}</td>
             <td>${d.inputSize}</td>
             <td>${d.executionTimeMs.toFixed(3)}</td>
             <td>${structOps}</td>
@@ -217,60 +204,47 @@ function populateTable(currentData) {
     });
 }
 
-function getBestPerformersSummary() {
-    if (rawData.length === 0) return {};
-
-    // Only assess performance on the absolute largest input size benchmarked to actually test the tree's scaling
+function calculateBestPerformersOverall() {
+    if (rawData.length === 0) return;
     const maxSize = Math.max(...rawData.map(d => d.inputSize));
     const maxData = rawData.filter(d => d.inputSize === maxSize);
 
-    const findBest = (filterFn, metricFn) => {
-        const filtered = maxData.filter(filterFn);
+    const getWinner = (op, metric) => {
+        const filtered = maxData.filter(d => d.operation === op);
         if (filtered.length === 0) return 'N/A';
-        const best = filtered.reduce((prev, curr) => metricFn(prev) < metricFn(curr) ? prev : curr);
-        return best ? best.tree : 'N/A';
+        return filtered.reduce((prev, curr) => (prev[metric] < curr[metric]) ? prev : curr).tree;
     };
 
-    return {
-        'Fastest Search': findBest(d => d.operation === 'Search', d => d.executionTimeMs),
-        'Fastest Insert': findBest(d => d.operation === 'Insert', d => d.executionTimeMs),
-        'Fastest Delete': findBest(d => d.operation === 'Delete', d => d.executionTimeMs),
-        'Best Range Query': findBest(d => d.operation === 'Range Query', d => d.executionTimeMs),
-        'Lowest Height': findBest(d => d.operation === 'Insert', d => d.maxHeight),
-        'Fewest Rotations': findBest(d => d.operation === 'Insert' && (d.tree === 'AVL' || d.tree === 'Red-Black'), d => d.singleRotations + d.doubleRotations),
-        'Best for Sorted Input': findBest(d => d.operation === 'Insert' && d.dataset === 'Sorted', d => d.executionTimeMs),
-        'Least Memory per Node': findBest(d => d.operation === 'Insert', d => d.memoryBytes / d.inputSize) // Divides total memory by N keys!
+    const categories = {
+        'Fastest Search': getWinner('Search', 'executionTimeMs'),
+        'Fastest Insert': getWinner('Insert', 'executionTimeMs'),
+        'Memory Efficient': getWinner('Insert', 'memoryBytes'),
+        'Shallowest Tree': getWinner('Insert', 'maxHeight')
     };
-}
 
-function calculateBestPerformersOverall() {
-    const summary = getBestPerformersSummary();
-    const ul = document.getElementById('winnersList');
-    ul.innerHTML = '';
+    const winnersList = document.getElementById('winnersList');
+    if (!winnersList) return;
+    winnersList.innerHTML = '';
 
-    Object.entries(summary).forEach(([category, winner]) => {
+    Object.entries(categories).forEach(([label, tree]) => {
         const li = document.createElement('li');
-        li.innerHTML = `<span>${category}</span> <span class="winner-tree" style="color:${colors[winner] || 'inherit'}">${winner}</span>`;
-        ul.appendChild(li);
+        li.innerHTML = `<span>${label}</span> <span class="winner-tree">${tree}</span>`;
+        winnersList.appendChild(li);
     });
 }
 
 let sortAsc = true;
 function sortTable(colIndex) {
-    const table = document.getElementById('metricsTable');
     const tbody = document.getElementById('metricsTableBody');
     const rows = Array.from(tbody.querySelectorAll('tr'));
-    
     rows.sort((a, b) => {
-        let valA = a.children[colIndex].textContent;
-        let valB = b.children[colIndex].textContent;
-
-        if (!isNaN(parseFloat(valA)) && !isNaN(parseFloat(valB))) {
-            return sortAsc ? parseFloat(valA) - parseFloat(valB) : parseFloat(valB) - parseFloat(valA);
+        let vA = a.children[colIndex].innerText;
+        let vB = b.children[colIndex].innerText;
+        if (!isNaN(parseFloat(vA)) && !isNaN(parseFloat(vB))) {
+            return sortAsc ? parseFloat(vA) - parseFloat(vB) : parseFloat(vB) - parseFloat(vA);
         }
-        return sortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        return sortAsc ? vA.localeCompare(vB) : vB.localeCompare(vA);
     });
-    
     tbody.innerHTML = '';
     rows.forEach(r => tbody.appendChild(r));
     sortAsc = !sortAsc;
