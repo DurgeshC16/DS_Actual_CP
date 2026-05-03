@@ -15,7 +15,7 @@ const complexMap = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    visualizer = new TreeVisualizer('d3-container');
+    visualizer = new ADSVisualizer('d3-container');
     
     document.querySelectorAll('.nav-item').forEach(item => {
         item.addEventListener('click', (e) => {

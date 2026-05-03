@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <memory>
+#include <chrono>
 #include <nlohmann/json.hpp>
 
 #include "AVLTree.h"
@@ -107,6 +108,9 @@ int main(int argc, char* argv[]) {
 
     std::vector<std::string> logs;
 
+    // --- Timing: wrap the action-processing loop ---
+    auto t_start = std::chrono::high_resolution_clock::now();
+
     if (input_json.contains("actions") && input_json["actions"].is_array()) {
         for (const auto& action_json : input_json["actions"]) {
             std::string action_str = action_json.get<std::string>();
@@ -133,6 +137,9 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    auto t_end = std::chrono::high_resolution_clock::now();
+    double elapsed_ms = std::chrono::duration<double, std::milli>(t_end - t_start).count();
+
     tree->updateHeightAndMemory();
     auto metrics = tree->getMetrics();
 
@@ -141,10 +148,11 @@ int main(int argc, char* argv[]) {
     response["tree"] = tree->toJson();
     
     json j_metrics;
-    j_metrics["time_ms"] = metrics.executionTimeMs; // it is static actually or collected via external. Wait, metrics in search tree doesn't track time automatically.
+    j_metrics["time_ms"] = elapsed_ms;
     j_metrics["comparisons"] = metrics.comparisons;
     j_metrics["rotations"] = metrics.singleRotations + metrics.doubleRotations * 2;
     j_metrics["memoryBytes"] = metrics.memoryBytes;
+    j_metrics["height"] = metrics.maxHeight;
     
     response["metrics"] = j_metrics;
     response["logs"] = logs;
