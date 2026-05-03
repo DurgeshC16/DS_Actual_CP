@@ -11,10 +11,31 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Locate the compiled CLI binary
-let CLI_PATH = path.join(__dirname, '..', 'build', 'Debug', 'tree_cli.exe');
-if (!fs.existsSync(CLI_PATH)) {
-    CLI_PATH = path.join(__dirname, '..', 'build', 'tree_cli.exe');
+// ─── Locate the compiled CLI binary ──────────────────────────────────────────
+// Probe candidates in priority order:
+//   1. build/Debug/tree_cli.exe     (Windows Debug)
+//   2. build/Debug/tree_cli         (Linux/Mac Debug)
+//   3. build/Release/tree_cli.exe   (Windows Release)
+//   4. build/Release/tree_cli       (Linux/Mac Release)
+//   5. build/tree_cli.exe           (Windows flat build)
+//   6. build/tree_cli               (Linux/Mac flat build)
+const CLI_CANDIDATES = [
+    path.join(__dirname, '..', 'build', 'Debug',   'tree_cli.exe'),
+    path.join(__dirname, '..', 'build', 'Debug',   'tree_cli'),
+    path.join(__dirname, '..', 'build', 'Release', 'tree_cli.exe'),
+    path.join(__dirname, '..', 'build', 'Release', 'tree_cli'),
+    path.join(__dirname, '..', 'build',             'tree_cli.exe'),
+    path.join(__dirname, '..', 'build',             'tree_cli'),
+];
+
+const CLI_PATH = CLI_CANDIDATES.find(p => fs.existsSync(p)) || null;
+
+if (!CLI_PATH) {
+    console.warn(
+        '\n⚠️  WARNING: tree_cli binary not found. Checked paths:\n' +
+        CLI_CANDIDATES.map(p => `   • ${p}`).join('\n') +
+        '\nBuild the project first (cmake --build ./build), then restart the server.\n'
+    );
 }
 
 // ─── Session Store ────────────────────────────────────────────────────────────
@@ -41,6 +62,11 @@ setInterval(() => {
 
 // ─── CLI Executor ─────────────────────────────────────────────────────────────
 async function executeTreeCli(type, actions, order = 3) {
+    // Guard: binary was not found at startup
+    if (!CLI_PATH) {
+        return { status: 'error', message: 'tree_cli binary not found. Build the project first.' };
+    }
+
     return new Promise((resolve) => {
         const tempId = crypto.randomBytes(8).toString('hex');
         const inputPath = path.join(__dirname, `temp_input_${tempId}.json`);
@@ -161,5 +187,9 @@ app.use(express.static(path.join(__dirname, '..', 'dashboard')));
 
 app.listen(PORT, () => {
     console.log(`ADS Backend running on http://localhost:${PORT}`);
-    console.log(`CLI path: ${CLI_PATH} (exists: ${fs.existsSync(CLI_PATH)})`);
+    if (CLI_PATH) {
+        console.log(`✅ CLI binary: ${CLI_PATH}`);
+    } else {
+        console.log('❌ CLI binary: not found — API calls will return errors until the project is built.');
+    }
 });

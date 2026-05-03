@@ -25,6 +25,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('operationSelect')?.addEventListener('change', updateDashboard);
     document.getElementById('datasetSelect')?.addEventListener('change', updateDashboard);
     document.getElementById('sizeSelect')?.addEventListener('change', updateDashboard);
+
+    // Wire table-header sort — reads data-col="N" set in performance.html.
+    // No inline onclick needed; consistent with all other event wiring in this project.
+    document.querySelectorAll('#metricsTable thead th[data-col]').forEach(th => {
+        th.style.cursor = 'pointer';
+        th.addEventListener('click', () => sortTable(parseInt(th.dataset.col, 10), th));
+    });
 });
 
 function initializeDashboard() {
@@ -234,19 +241,33 @@ function calculateBestPerformersOverall() {
     });
 }
 
-let sortAsc = true;
-function sortTable(colIndex) {
+// Per-column sort direction: Map<colIndex, boolean> where true = ascending.
+// Each column independently remembers its own direction so switching columns
+// always starts ascending instead of inheriting the previous column's state.
+const _sortDirMap = new Map();
+
+function sortTable(colIndex, clickedTh) {
+    const asc = !(_sortDirMap.get(colIndex) === true); // toggle: default to asc on first click
+    _sortDirMap.set(colIndex, asc);
+
     const tbody = document.getElementById('metricsTableBody');
     const rows = Array.from(tbody.querySelectorAll('tr'));
     rows.sort((a, b) => {
         let vA = a.children[colIndex].innerText;
         let vB = b.children[colIndex].innerText;
         if (!isNaN(parseFloat(vA)) && !isNaN(parseFloat(vB))) {
-            return sortAsc ? parseFloat(vA) - parseFloat(vB) : parseFloat(vB) - parseFloat(vA);
+            return asc ? parseFloat(vA) - parseFloat(vB) : parseFloat(vB) - parseFloat(vA);
         }
-        return sortAsc ? vA.localeCompare(vB) : vB.localeCompare(vA);
+        return asc ? vA.localeCompare(vB) : vB.localeCompare(vA);
     });
     tbody.innerHTML = '';
     rows.forEach(r => tbody.appendChild(r));
-    sortAsc = !sortAsc;
+
+    // Update sort indicator: clear all headers, set ▲/▼ on the active one.
+    document.querySelectorAll('#metricsTable thead th[data-col]').forEach(th => {
+        th.textContent = th.textContent.replace(/[\s▲▼]+$/, '');
+    });
+    if (clickedTh) {
+        clickedTh.textContent = clickedTh.textContent.trimEnd() + (asc ? ' ▲' : ' ▼');
+    }
 }
