@@ -84,10 +84,17 @@ async function buildTree() {
         
         if (result.status === 'success') {
             visualizer.render(result.tree);
+            if (result.metrics && result.metrics.height === undefined) {
+                const heights = result.tree.nodes.map(n => n.height || 0);
+                result.metrics.height = heights.length > 0 ? Math.max(...heights) : 'N/A';
+            }
             updateStats(result.metrics);
+        } else {
+            alert(`Error: ${result.message || 'Unknown error from server'}`);
         }
     } catch (e) { 
         console.error("Manual Build Error:", e);
+        alert("Backend error. Please ensure the server is running ('node server.js' in backend folder).");
     }
 }
 
@@ -118,7 +125,7 @@ async function runComparison() {
 function updateStats(m) {
     if (!m) return;
     document.getElementById('stat-nodes').innerText = parseInput().length;
-    document.getElementById('stat-height').innerText = m.height || 0;
+    document.getElementById('stat-height').innerText = m.height !== undefined ? m.height : 'N/A';
     document.getElementById('stat-comps').innerText = m.comparisons || 0;
     document.getElementById('stat-rot').innerText = m.rotations || 0;
 }

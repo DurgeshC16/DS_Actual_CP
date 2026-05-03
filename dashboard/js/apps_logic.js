@@ -195,7 +195,7 @@ async function handleAction(action) {
             addLog(`Error: ${data.message}`, 'delete');
         }
     } catch (e) {
-        addLog(`Backend error. Check server.`, 'delete');
+        addLog(`Backend error: Check if Node server is running on port 3000.`, 'delete');
     }
 }
 

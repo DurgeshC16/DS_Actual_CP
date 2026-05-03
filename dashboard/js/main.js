@@ -57,7 +57,7 @@ function updateDashboard() {
 
 function updateCharts(opDatasetData, currentSizeData, operation) {
     const trees = ['AVL', 'Red-Black', 'B-Tree', 'B+ Tree', 'Splay'];
-    const sizes = [1000, 10000, 100000];
+    const sizes = [...new Set(rawData.map(d => d.inputSize))].sort((a, b) => a - b);
 
     // 1. Time vs Size (Line Chart)
     const timeData = {
@@ -99,7 +99,7 @@ function updateCharts(opDatasetData, currentSizeData, operation) {
             label: tree,
             data: sizes.map(s => {
                 const d = opDatasetData.find(x => x.tree === tree && x.inputSize === s);
-                return d ? d.maxHeight : 0;
+                return d && d.maxHeight > 0 ? d.maxHeight : null;
             }),
             borderColor: colors[tree],
             tension: 0.3
@@ -169,7 +169,8 @@ function buildChart(id, type, canvasId, data, yTitle) {
                 y: { 
                     title: { display: true, text: yTitle, color: '#94a3b8' },
                     grid: { color: '#334155' },
-                    ticks: { color: '#94a3b8' }
+                    ticks: { color: '#94a3b8' },
+                    type: id === 'height' ? 'logarithmic' : 'linear'
                 }
             },
             plugins: {
