@@ -8,6 +8,8 @@ class ADSVisualizer {
         this.zoom = d3.zoom().on('zoom', (e) => this.g.attr('transform', e.transform));
         this.svg.call(this.zoom);
 
+        this._hasContent = false;  // Issue 11: track if tree was previously non-empty
+
         window.addEventListener('resize', () => this.updateSize());
         this.updateSize();
     }
@@ -20,6 +22,7 @@ class ADSVisualizer {
 
     clear() {
         this.g.selectAll('*').remove();
+        this._hasContent = false;  // Issue 11: reset flag when explicitly cleared
     }
 
     render(data) {
@@ -69,8 +72,12 @@ class ADSVisualizer {
             const treeLayout = d3.tree().nodeSize([nodeW, 100]);
             treeLayout(root);
 
-            // Center view
-            this.svg.call(this.zoom.transform, d3.zoomIdentity.translate(this.width / 2, 50));
+            // Issue 11: only reset zoom/pan on the first render (empty → content).
+            // Preserve the user's position on subsequent inserts.
+            if (!this._hasContent) {
+                this.svg.call(this.zoom.transform, d3.zoomIdentity.translate(this.width / 2, 50));
+                this._hasContent = true;
+            }
 
             // Links
             this.g.selectAll('.link')
@@ -82,17 +89,28 @@ class ADSVisualizer {
                 .attr('stroke', '#475569')
                 .attr('stroke-width', 1.5);
 
-            // B+ Tree leaf links (dashed horizontal connection)
+            // BUG 7 FIX: B+ Tree leaf links — smooth cubic Bezier arcs that exit
+            // BELOW each leaf node and curve underneath the tree so they never
+            // intersect with any node rectangle.
             if (treeData.type === 'bplus') {
                 const leaves = root.leaves().sort((a, b) => a.x - b.x);
+                // Drop the arc 40px below the leaf node centre (outside the rect)
+                const DROP = 40;
                 for (let i = 0; i < leaves.length - 1; i++) {
+                    const x1 = leaves[i].x;
+                    const y1 = leaves[i].y + DROP;
+                    const x2 = leaves[i + 1].x;
+                    const y2 = leaves[i + 1].y + DROP;
+                    // Midpoint y is another 20px lower so the arc bows cleanly
+                    const cy = Math.max(y1, y2) + 20;
                     this.g.append('path')
                         .attr('class', 'link leaf-link')
-                        .attr('d', `M ${leaves[i].x} ${leaves[i].y} L ${leaves[i+1].x} ${leaves[i+1].y}`)
+                        .attr('d', `M ${x1} ${y1} C ${x1} ${cy}, ${x2} ${cy}, ${x2} ${y2}`)
                         .attr('fill', 'none')
-                        .attr('stroke-dasharray', '4,2')
+                        .attr('stroke-dasharray', '5,3')
                         .attr('stroke', '#60a5fa')
-                        .attr('stroke-width', 1.5);
+                        .attr('stroke-width', 1.5)
+                        .attr('opacity', 0.85);
                 }
             }
 

@@ -107,6 +107,7 @@ int main(int argc, char* argv[]) {
     }
 
     std::vector<std::string> logs;
+    int lastInsertVal = -1;  // Issue 12: track last inserted value for highlight
 
     // --- Timing: wrap the action-processing loop ---
     auto t_start = std::chrono::high_resolution_clock::now();
@@ -121,8 +122,10 @@ int main(int argc, char* argv[]) {
                 
                 if (op == "insert") {
                     tree->insert(val);
+                    lastInsertVal = val;
                     logs.push_back("Insert " + std::to_string(val));
                 } else if (op == "delete") {
+                    lastInsertVal = -1;  // clear highlight on delete
                     tree->remove(val);
                     logs.push_back("Delete " + std::to_string(val));
                 } else if (op == "search") {
@@ -145,7 +148,25 @@ int main(int argc, char* argv[]) {
 
     json response;
     response["status"] = "success";
-    response["tree"] = tree->toJson();
+
+    // Issue 12: get tree JSON and highlight the last inserted node
+    json treeJson = tree->toJson();
+    if (lastInsertVal >= 0 && treeJson.contains("nodes") && treeJson["nodes"].is_array()) {
+        for (auto& node : treeJson["nodes"]) {
+            // key may be an int or a string containing the number
+            bool matches = false;
+            if (node.contains("key")) {
+                if (node["key"].is_number_integer()) {
+                    matches = (node["key"].get<int>() == lastInsertVal);
+                } else if (node["key"].is_string()) {
+                    try { matches = (std::stoi(node["key"].get<std::string>()) == lastInsertVal); }
+                    catch (...) {}
+                }
+            }
+            node["highlight"] = matches;
+        }
+    }
+    response["tree"] = treeJson;
     
     json j_metrics;
     j_metrics["time_ms"] = elapsed_ms;

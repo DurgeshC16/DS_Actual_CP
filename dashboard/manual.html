@@ -39,7 +39,8 @@
                 <h2>Tree Settings</h2>
                 <div class="control-group">
                     <label>Target Tree</label>
-                    <select id="tree-select" onchange="toggleOrder(); buildTree()">
+                    <!-- BUG 2 FIX: removed inline onchange — wired in manual_logic.js DOMContentLoaded -->
+                    <select id="tree-select">
                         <option value="avl">AVL Tree</option>
                         <option value="rb">Red-Black Tree</option>
                         <option value="btree">B-Tree</option>
@@ -49,7 +50,8 @@
                 </div>
                 <div id="order-group" class="control-group" style="display:none">
                     <label>Tree Order</label>
-                    <input type="number" id="manual-order" value="3" min="2" max="10" onchange="buildTree()">
+                    <!-- BUG 2 FIX: removed inline onchange — wired in manual_logic.js DOMContentLoaded -->
+                    <input type="number" id="manual-order" value="3" min="2" max="10">
                 </div>
             </section>
 
@@ -60,14 +62,16 @@
                     <label>Insert Value</label>
                     <div style="display:flex;gap:0.5rem">
                         <input type="number" id="single-val" placeholder="e.g. 42" style="flex:1">
-                        <button id="btn-insert-single" class="primary" style="flex:none;padding:0.65rem 1rem">Insert</button>
+                        <!-- BUG 1 FIX: type="button" already present — confirmed -->
+                        <button id="btn-insert-single" type="button" class="primary" style="flex:none;padding:0.65rem 1rem">Insert</button>
                     </div>
                 </div>
                 <div class="control-group">
                     <label>Delete Value</label>
                     <div style="display:flex;gap:0.5rem">
                         <input type="number" id="delete-val" placeholder="e.g. 42" style="flex:1">
-                        <button id="btn-delete-single" class="danger" style="flex:none;padding:0.65rem 1rem">Delete</button>
+                        <!-- BUG 1 FIX: type="button" already present — confirmed -->
+                        <button id="btn-delete-single" type="button" class="danger" style="flex:none;padding:0.65rem 1rem">Delete</button>
                     </div>
                 </div>
             </section>
@@ -80,11 +84,11 @@
                     <textarea id="raw-input" style="height:80px;width:100%;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;color:var(--text-main);padding:0.6rem;resize:vertical" placeholder="e.g. 10, 50, 20, 30, 45, 12"></textarea>
                 </div>
                 <div class="btn-group">
-                    <button id="btn-load-bulk" class="primary">Load Values</button>
-                    <button id="btn-compare" class="primary">Compare All</button>
+                    <button id="btn-load-bulk" type="button" class="primary">Load Values</button>
+                    <button id="btn-compare" type="button" class="primary">Compare All</button>
                 </div>
                 <div class="btn-group" style="margin-top:0.5rem">
-                    <button id="btn-clear-manual" class="danger">Clear All</button>
+                    <button id="btn-clear-manual" type="button" class="danger">Clear All</button>
                 </div>
             </section>
 
@@ -113,18 +117,14 @@
 
             <!-- Comparison chart -->
             <div class="chart-container" style="height:340px">
-                <h3>Dataset Complexity Analysis — Compare All Trees</h3>
+                <!-- BUG 10: title rendered dynamically by JS -->
+                <h3 id="chart-title">Dataset Complexity Analysis — Compare All Trees</h3>
                 <canvas id="manual-chart"></canvas>
             </div>
         </main>
     </div>
 
-    <script>
-        function toggleOrder() {
-            const val = document.getElementById('tree-select').value;
-            document.getElementById('order-group').style.display = (val === 'btree' || val === 'bplus') ? 'block' : 'none';
-        }
-    </script>
+    <!-- BUG 2 FIX: removed inline <script> block with toggleOrder() — logic moved to manual_logic.js -->
     <script src="js/d3_visualizer.js"></script>
     <script src="js/manual_logic.js"></script>
 </body>
