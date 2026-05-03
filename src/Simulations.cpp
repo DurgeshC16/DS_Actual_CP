@@ -42,6 +42,15 @@ json simulateDatabase(const std::vector<std::string>& actions) {
     json res = dbIndex->toJson();
     res["type"] = "bplus";
     res["logs"] = logs_arr;
+
+    // FIX 2: metrics — comparisons = total operations performed,
+    // memoryBytes = nodes * 64 bytes (B+ Tree node is wider than a BST node)
+    int nodeCount = res.contains("nodes") ? (int)res["nodes"].size() : 0;
+    res["metrics"] = {
+        {"comparisons",  (int)actions.size()},
+        {"time_ms",      0.0},
+        {"memoryBytes",  nodeCount * 64}
+    };
     return res;
 }
 
@@ -86,6 +95,15 @@ json simulateMemoryAllocation(const std::vector<std::string>& actions) {
     }
 
     tree_json["logs"] = logs_arr;
+
+    // FIX 2: metrics — comparisons = number of tracked blocks (AVL node count),
+    // memoryBytes = nodes * 48 bytes (AVL node overhead)
+    int blockCount = tree_json.contains("nodes") ? (int)tree_json["nodes"].size() : 0;
+    tree_json["metrics"] = {
+        {"comparisons",  blockCount},
+        {"time_ms",      0.0},
+        {"memoryBytes",  blockCount * 48}
+    };
     return tree_json;
 }
 
@@ -178,7 +196,16 @@ json simulateFileSystem(const std::vector<std::string>& actions) {
     json res;
     res["nodes"] = nodes;
     res["edges"] = edges;
-    res["logs"] = logs_arr;
+    res["logs"]  = logs_arr;
+
+    // FIX 2: metrics — comparisons = total inodes (nodes) in the tree,
+    // memoryBytes = inodes * 128 bytes (path string + metadata overhead)
+    int inodeCount = (int)nodes.size();
+    res["metrics"] = {
+        {"comparisons",  inodeCount},
+        {"time_ms",      0.0},
+        {"memoryBytes",  inodeCount * 128}
+    };
     return res;
 }
 
@@ -328,10 +355,19 @@ json simulateExpressionTree(const std::string& expression) {
     }
 
     json res;
-    res["nodes"] = nodes_arr;
-    res["edges"] = edges_arr;
+    res["nodes"]       = nodes_arr;
+    res["edges"]       = edges_arr;
     res["eval_result"] = eval_result;
-    res["logs"] = logs_arr;
+    res["logs"]        = logs_arr;
+
+    // FIX 2: metrics — comparisons = AST node count (each node is one parse step),
+    // memoryBytes = nodes * 32 bytes (small struct: id + key string + two pointers)
+    int astNodes = (int)nodes_arr.size();
+    res["metrics"] = {
+        {"comparisons",  astNodes},
+        {"time_ms",      0.0},
+        {"memoryBytes",  astNodes * 32}
+    };
     return res;
 }
 

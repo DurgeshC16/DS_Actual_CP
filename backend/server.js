@@ -156,7 +156,12 @@ for (const sim of simulations) {
         if (!sessionId) {
             // No session: run actions directly
             const result = await executeTreeCli(cliType, actions);
-            return res.json({ status: 'success', tree: result, logs: result.logs || [] });
+            return res.json({
+                status:  'success',
+                tree:    result,
+                logs:    result.logs    || [],
+                metrics: result.metrics || {}
+            });
         }
 
         const session = getSession(sessionId, cliType);
@@ -171,11 +176,13 @@ for (const sim of simulations) {
         const rawResult = await executeTreeCli(cliType, session.actions);
 
         // The simulation CLIs return the tree JSON directly (wrapped by wrapMock),
-        // so rawResult.tree is the simulation tree object
+        // so rawResult.tree is the simulation tree object.
+        // FIX 2: also forward rawResult.metrics so the client stats panel updates.
         if (rawResult.status === 'success') {
             const treeData = rawResult.tree || rawResult;
-            const logs = treeData.logs || rawResult.logs || [];
-            res.json({ status: 'success', tree: treeData, logs });
+            const logs     = treeData.logs || rawResult.logs || [];
+            const metrics  = rawResult.metrics || treeData.metrics || {};
+            res.json({ status: 'success', tree: treeData, logs, metrics });
         } else {
             res.json(rawResult);
         }
