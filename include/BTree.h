@@ -7,16 +7,18 @@ public:
     std::vector<int> keys;
     std::vector<BTreeNode*> children;
     bool leaf;
-    int t; 
+    int t;    // CLRS minimum degree (used for min-key enforcement)
+    int MAX;  // maximum keys per node = Knuth order - 1
 
-    BTreeNode(int t, bool leaf);
+    BTreeNode(int t, int max_keys, bool leaf);
     ~BTreeNode();
 };
 
 class BTree : public SearchTree {
 private:
     BTreeNode* root;
-    int t;
+    int t;    // CLRS minimum degree
+    int MAX;  // max keys per node = Knuth order - 1
     size_t nodeCount;
 
     void insertNonFull(BTreeNode* x, int k);
@@ -39,7 +41,9 @@ private:
     int getHeightHelper(BTreeNode* node) const;
 
 public:
-    BTree(int min_degree = 3);
+    // Constructor: knuth_order is the Knuth B-Tree order (max children per node).
+    // Internally computes t = max(2, ceil(order/2)) and MAX = order - 1.
+    BTree(int knuth_order = 4);
     ~BTree() override;
 
     void insert(int key) override;

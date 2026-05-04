@@ -58,6 +58,22 @@ int main(int argc, char* argv[]) {
     if (input_json.contains("order") && input_json["order"].is_number()) {
         order = input_json["order"].get<int>();
     }
+    // --- Knuth order → constructor parameter conversion ---
+    //
+    // Knuth order m means: max m children, max (m-1) keys per node.
+    // Example: Order 4 → max 4 children, max 3 keys.
+    //          min ceil(m/2) children (non-root), min ceil(m/2)-1 keys.
+    //
+    // BTree(order) receives m directly and enforces max m children.
+    //
+    // BPlusTree(max_keys) takes the maximum keys per node directly.
+    //   Conversion: max_keys = m - 1.  Enforce max_keys >= 2.
+    //
+    // Examples:
+    //   Order 3 -> max 3 children, max 2 keys
+    //   Order 4 -> max 4 children, max 3 keys
+    //   Order 5 -> max 5 children, max 4 keys
+    int max_keys  = std::max(2, order - 1);         // direct max-keys limit for BPlusTree
 
     if (type == "avl") {
         tree = std::make_unique<AVLTree>();
@@ -66,7 +82,7 @@ int main(int argc, char* argv[]) {
     } else if (type == "btree") {
         tree = std::make_unique<BTree>(order);
     } else if (type == "bplus") {
-        tree = std::make_unique<BPlusTree>(order);
+        tree = std::make_unique<BPlusTree>(max_keys);
     } else if (type == "splay") {
         tree = std::make_unique<SplayTree>();
     }

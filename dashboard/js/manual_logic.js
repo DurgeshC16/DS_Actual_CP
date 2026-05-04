@@ -43,16 +43,49 @@ function toggleOrder() {
 // ─── BUG 3 & General: Live badge update — called on select change + order input
 function updateManualBadge() {
     const type = document.getElementById('tree-select')?.value;
-    const order = document.getElementById('manual-order')?.value || '3';
+    const order = getManualOrder();
     const badge = document.getElementById('order-badge');
     if (!badge) return;
     if (type === 'btree' || type === 'bplus') {
         const label = type === 'btree' ? 'B-Tree' : 'B+ Tree';
-        badge.innerText = `${label} — Order: ${order}`;
+        const maxKeys = getMaxKeysForOrder(order);
+        const minChildren = Math.ceil(order / 2);
+        const minKeys = Math.max(1, minChildren - 1);
+        badge.innerText = `${label} - Order ${order}: keys ${minKeys}-${maxKeys}, children ${minChildren}-${order}`;
         badge.style.display = 'block';
     } else {
         badge.style.display = 'none';
     }
+
+    updateOrderInfo();
+}
+
+function getManualOrder() {
+    const input = document.getElementById('manual-order');
+    const order = parseInt(input?.value, 10);
+    return Number.isFinite(order) ? Math.max(3, order) : 3;
+}
+
+function getMaxKeysForOrder(order) {
+    return Math.max(2, order - 1);
+}
+
+function updateOrderInfo() {
+    const info = document.getElementById('order-info');
+    const type = document.getElementById('tree-select')?.value;
+    if (!info) return;
+
+    if (type !== 'btree' && type !== 'bplus') {
+        info.style.display = 'none';
+        return;
+    }
+
+    const order = getManualOrder();
+    const maxKeys = getMaxKeysForOrder(order);
+    const minChildren = Math.ceil(order / 2);
+    const minKeys = Math.max(1, minChildren - 1);
+    info.innerText = `Order ${order}: non-root internal nodes have ${minChildren}-${order} children and ${minKeys}-${maxKeys} keys. Root may have fewer.`;
+    info.style.display = 'block';
 }
 
 // ─── Init ──────────────────────────────────────────────────────────────────────
@@ -71,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('tree-select').addEventListener('change', onTreeTypeChange);
     document.getElementById('manual-order').addEventListener('input', () => {
         updateManualBadge();      // BUG 3: update badge live as user types
+        renderBuildSimulation();
     });
 
     // BUG 2: call toggleOrder once on load to reflect any browser-restored state
@@ -108,6 +142,7 @@ async function onTreeTypeChange() {
     visualizer.clear();
     updateStats({ nodes: 0, height: 0, comparisons: 0, rotations: 0 });
     updateValueBadge();
+    renderBuildSimulation();
 
     // BUG 2: toggle order input visibility
     toggleOrder();
@@ -158,11 +193,12 @@ async function buildTree() {
         updateStats({ nodes: 0, height: 0, comparisons: 0, rotations: 0 });
         updateValueBadge();
         updateManualBadge(); // BUG 3: keep badge state correct on empty tree
+        renderBuildSimulation();
         return;
     }
 
     const type = document.getElementById('tree-select').value;
-    const order = parseInt(document.getElementById('manual-order').value) || 3;
+    const order = getManualOrder();
 
     // BUG 3: always update badge before the fetch (not inside it)
     updateManualBadge();
@@ -199,6 +235,7 @@ async function buildTree() {
                 comparisons: result.metrics?.comparisons ?? 0,
                 rotations: result.metrics?.rotations ?? 0
             });
+            renderBuildSimulation();
         } else {
             alert(`Error: ${result.message || 'Server error'}`);
         }
@@ -226,7 +263,7 @@ async function runComparison() {
     try {
         const trees = ['avl', 'rb', 'btree', 'bplus', 'splay'];
         const treeLabels = ['AVL', 'Red-Black', 'B-Tree', 'B+ Tree', 'Splay'];
-        const order = parseInt(document.getElementById('manual-order').value) || 3;
+        const order = getManualOrder();
         const actions = insertedValues.map(v => `insert:${v}`);
 
         const times = [], comps = [], rots = [], heights = [];
@@ -367,6 +404,7 @@ async function clearAll() {
     updateValueBadge();
     // BUG 3: restore badge based on currently selected tree type (don't just hide)
     updateManualBadge();
+    renderBuildSimulation();
     if (comparisonChart) { comparisonChart.destroy(); comparisonChart = null; }
     initChart();
 
@@ -391,6 +429,143 @@ function updateValueBadge() {
 }
 
 // ─── Initial blank chart ──────────────────────────────────────────────────────
+function renderBuildSimulation() {
+    const card = document.getElementById('build-simulation-card');
+    const list = document.getElementById('build-simulation-list');
+    const type = document.getElementById('tree-select')?.value;
+    if (!card || !list) return;
+
+    if ((type !== 'btree' && type !== 'bplus') || insertedValues.length === 0) {
+        card.style.display = 'none';
+        list.innerHTML = '';
+        return;
+    }
+
+    const steps = simulateMultiwayBuild(type, insertedValues, getManualOrder());
+    const visible = steps.slice(-12);
+    list.innerHTML = '';
+
+    if (steps.length > visible.length) {
+        const skipped = document.createElement('li');
+        skipped.innerText = `${steps.length - visible.length} earlier build step(s) hidden`;
+        list.appendChild(skipped);
+    }
+
+    visible.forEach(step => {
+        const li = document.createElement('li');
+        if (step.includes('split')) {
+            li.innerHTML = step.replace('split', '<span class="split">split</span>');
+        } else {
+            li.innerText = step;
+        }
+        list.appendChild(li);
+    });
+
+    card.style.display = 'block';
+}
+
+function simulateMultiwayBuild(type, values, order) {
+    const state = {
+        root: { keys: [], children: [], leaf: true },
+        steps: [],
+        maxKeys: getMaxKeysForOrder(order)
+    };
+
+    values.forEach(value => {
+        state.steps.push(`Insert ${value}`);
+        const promoted = type === 'bplus'
+            ? insertBPlusSim(state.root, value, state)
+            : insertBTreeSim(state.root, value, state);
+
+        if (promoted) {
+            state.root.keys = [promoted.key];
+            state.root.children = [promoted.left, promoted.right];
+            state.root.leaf = false;
+            state.steps.push(`Root split: promote ${promoted.key}; height increases`);
+        } else {
+            state.steps[state.steps.length - 1] = `Insert ${value}: placed without split`;
+        }
+    });
+
+    return state.steps;
+}
+
+function insertBTreeSim(node, value, state) {
+    if (node.leaf) {
+        insertSortedUnique(node.keys, value);
+    } else {
+        let childIndex = 0;
+        while (childIndex < node.keys.length && value > node.keys[childIndex]) childIndex++;
+        const promoted = insertBTreeSim(node.children[childIndex], value, state);
+        if (promoted) {
+            node.keys.splice(childIndex, 0, promoted.key);
+            node.children.splice(childIndex, 1, promoted.left, promoted.right);
+        }
+    }
+
+    if (node.keys.length <= state.maxKeys) return null;
+
+    const mid = Math.floor(node.keys.length / 2);
+    const promotedKey = node.keys[mid];
+    const left = {
+        keys: node.keys.slice(0, mid),
+        children: node.leaf ? [] : node.children.slice(0, mid + 1),
+        leaf: node.leaf
+    };
+    const right = {
+        keys: node.keys.slice(mid + 1),
+        children: node.leaf ? [] : node.children.slice(mid + 1),
+        leaf: node.leaf
+    };
+    state.steps.push(`Node split: promote ${promotedKey}; max ${state.maxKeys} keys and ${state.maxKeys + 1} children`);
+    return { key: promotedKey, left, right };
+}
+
+function insertBPlusSim(node, value, state) {
+    if (node.leaf) {
+        insertSortedUnique(node.keys, value);
+    } else {
+        let childIndex = 0;
+        while (childIndex < node.keys.length && value >= node.keys[childIndex]) childIndex++;
+        const promoted = insertBPlusSim(node.children[childIndex], value, state);
+        if (promoted) {
+            node.keys.splice(childIndex, 0, promoted.key);
+            node.children.splice(childIndex, 1, promoted.left, promoted.right);
+        }
+    }
+
+    if (node.keys.length <= state.maxKeys) return null;
+
+    if (node.leaf) {
+        const mid = Math.ceil(node.keys.length / 2);
+        const left = { keys: node.keys.slice(0, mid), children: [], leaf: true };
+        const right = { keys: node.keys.slice(mid), children: [], leaf: true };
+        state.steps.push(`Leaf split: copy up ${right.keys[0]}; leaves remain linked`);
+        return { key: right.keys[0], left, right };
+    }
+
+    const mid = Math.floor(node.keys.length / 2);
+    const promotedKey = node.keys[mid];
+    const left = {
+        keys: node.keys.slice(0, mid),
+        children: node.children.slice(0, mid + 1),
+        leaf: false
+    };
+    const right = {
+        keys: node.keys.slice(mid + 1),
+        children: node.children.slice(mid + 1),
+        leaf: false
+    };
+    state.steps.push(`Internal split: promote ${promotedKey}; max children remains ${state.maxKeys + 1}`);
+    return { key: promotedKey, left, right };
+}
+
+function insertSortedUnique(keys, value) {
+    let index = 0;
+    while (index < keys.length && value > keys[index]) index++;
+    if (keys[index] !== value) keys.splice(index, 0, value);
+}
+
 function initChart() {
     const ctx = document.getElementById('manual-chart').getContext('2d');
     comparisonChart = new Chart(ctx, {

@@ -9,17 +9,17 @@
         {
           "name": "InsertAndBalance",
           "file": "C:\\Programming\\Second Year\\SY DS-2\\Actual CP\\tests\\TreeTests.cpp",
-          "line": 33
+          "line": 34
         },
         {
           "name": "InOrderSorted",
           "file": "C:\\Programming\\Second Year\\SY DS-2\\Actual CP\\tests\\TreeTests.cpp",
-          "line": 42
+          "line": 43
         },
         {
           "name": "DeleteAndBalance",
           "file": "C:\\Programming\\Second Year\\SY DS-2\\Actual CP\\tests\\TreeTests.cpp",
-          "line": 50
+          "line": 51
         }
       ]
     },
@@ -30,12 +30,12 @@
         {
           "name": "Invariants",
           "file": "C:\\Programming\\Second Year\\SY DS-2\\Actual CP\\tests\\TreeTests.cpp",
-          "line": 78
+          "line": 79
         },
         {
           "name": "InOrderSorted",
           "file": "C:\\Programming\\Second Year\\SY DS-2\\Actual CP\\tests\\TreeTests.cpp",
-          "line": 89
+          "line": 90
         }
       ]
     },
@@ -46,12 +46,12 @@
         {
           "name": "Invariants",
           "file": "C:\\Programming\\Second Year\\SY DS-2\\Actual CP\\tests\\TreeTests.cpp",
-          "line": 123
+          "line": 127
         },
         {
           "name": "InOrderSorted",
           "file": "C:\\Programming\\Second Year\\SY DS-2\\Actual CP\\tests\\TreeTests.cpp",
-          "line": 133
+          "line": 137
         }
       ]
     },
@@ -62,12 +62,12 @@
         {
           "name": "LeavesLinkedAndSorted",
           "file": "C:\\Programming\\Second Year\\SY DS-2\\Actual CP\\tests\\TreeTests.cpp",
-          "line": 169
+          "line": 173
         },
         {
           "name": "InOrderSorted",
           "file": "C:\\Programming\\Second Year\\SY DS-2\\Actual CP\\tests\\TreeTests.cpp",
-          "line": 179
+          "line": 183
         }
       ]
     }

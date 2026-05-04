@@ -2,10 +2,10 @@
 #include <iostream>
 #include <algorithm>
 
-BTreeNode::BTreeNode(int t1, bool leaf1) : leaf(leaf1), t(t1) {
-    keys.reserve(2 * t - 1);
+BTreeNode::BTreeNode(int t1, int max_keys, bool leaf1) : leaf(leaf1), t(t1), MAX(max_keys) {
+    keys.reserve(MAX + 1);      // +1 for temporary overflow before split
     if (!leaf) {
-        children.reserve(2 * t);
+        children.reserve(MAX + 2); // +2 for temporary overflow
     }
 }
 BTreeNode::~BTreeNode() {
@@ -14,7 +14,7 @@ BTreeNode::~BTreeNode() {
     }
 }
 
-BTree::BTree(int min_degree) : root(nullptr), t(min_degree), nodeCount(0) {}
+BTree::BTree(int knuth_order) : root(nullptr), t(std::max(2, (knuth_order + 1) / 2)), MAX(std::max(2, knuth_order - 1)), nodeCount(0) {}
 
 BTree::~BTree() {
     delete root;
@@ -22,19 +22,17 @@ BTree::~BTree() {
 
 void BTree::insert(int key) {
     if (root == nullptr) {
-        root = new BTreeNode(t, true);
+        root = new BTreeNode(t, MAX, true);
         root->keys.push_back(key);
         nodeCount++;
     } else {
-        if (root->keys.size() == 2 * t - 1) {
-            BTreeNode* s = new BTreeNode(t, false);
+        insertNonFull(root, key);
+        if ((int)root->keys.size() > MAX) {
+            BTreeNode* s = new BTreeNode(t, MAX, false);
             s->children.push_back(root);
             nodeCount++;
             splitChild(s, 0, root);
             root = s;
-            insertNonFull(root, key);
-        } else {
-            insertNonFull(root, key);
         }
     }
 }
@@ -59,42 +57,43 @@ void BTree::insertNonFull(BTreeNode* x, int k) {
         if (i >= 0) metrics.comparisons++;
         i++;
 
-        if (x->children[i]->keys.size() == 2 * t - 1) {
-            splitChild(x, i, x->children[i]);
-            if (x->keys[i] < k) {
-                metrics.comparisons++;
-                i++;
-            }
-        }
         insertNonFull(x->children[i], k);
+
+        if ((int)x->children[i]->keys.size() > MAX) {
+            splitChild(x, i, x->children[i]);
+        }
     }
 }
 
 void BTree::splitChild(BTreeNode* x, int i, BTreeNode* y) {
     metrics.splits++;
-    BTreeNode* z = new BTreeNode(t, y->leaf);
+    BTreeNode* z = new BTreeNode(t, MAX, y->leaf);
     nodeCount++;
-    for (int j = 0; j < t - 1; j++) {
-        z->keys.push_back(y->keys[j + t]);
+
+    const int totalKeys = static_cast<int>(y->keys.size());
+    const int mid = totalKeys / 2;
+
+    for (int j = mid + 1; j < totalKeys; j++) {
+        z->keys.push_back(y->keys[j]);
     }
 
     if (!y->leaf) {
-        for (int j = 0; j < t; j++) {
-            z->children.push_back(y->children[j + t]);
+        const int totalChildren = static_cast<int>(y->children.size());
+        for (int j = mid + 1; j < totalChildren; j++) {
+            z->children.push_back(y->children[j]);
         }
     }
 
-    int medianKey = y->keys[t - 1];
+    int medianKey = y->keys[mid];
 
-    y->keys.resize(t - 1);
-    // Explicitly shrink to fit so vector doesn't hold dead pointers over time
+    y->keys.resize(mid);
     y->keys.shrink_to_fit();
-    y->keys.reserve(2 * t - 1);
+    y->keys.reserve(MAX + 1);
 
     if (!y->leaf) {
-        y->children.resize(t);
+        y->children.resize(mid + 1);
         y->children.shrink_to_fit();
-        y->children.reserve(2 * t);
+        y->children.reserve(MAX + 2);
     }
 
     x->children.insert(x->children.begin() + i + 1, z);
@@ -354,18 +353,9 @@ int BTree::getHeightHelper(BTreeNode* node) const {
 
 void BTree::updateHeightAndMemory() {
     metrics.maxHeight = getHeightHelper(root);
-    
-    // Exact structural memory calculation
-    // A BTreeNode has a bool (leaf), an int (t), and two vectors.
-    // The vector capacities exactly dictate heap allocated bytes.
     size_t mem = nodeCount * sizeof(BTreeNode);
-    
-    // We assume an average BTree node holds 't' keys and 't+1' children (this is bounded by capacity resizing)
-    // std::vector<int> capacity logic varies, but for tight vectors its usually capacity * sizeof(T)
-    size_t avgKeysCap = (2 * t - 1); // Max capacity needed
-    size_t avgChildCap = (2 * t);
-    
-    mem += nodeCount * (avgKeysCap * sizeof(int) + avgChildCap * sizeof(void*));
+    // Use MAX (= order-1) as the actual max-keys capacity
+    mem += nodeCount * ((MAX + 1) * sizeof(int) + (MAX + 2) * sizeof(void*));
     metrics.memoryBytes = mem;
 }
 

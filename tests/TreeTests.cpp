@@ -2,6 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <random>
+#include <cmath>
 
 #define private public
 #define protected public
@@ -96,15 +97,18 @@ TEST(RedBlackTreeTest, InOrderSorted) {
 
 // ---------------- B-Tree Tests ----------------
 
-bool checkBTreeInvariants(BTreeNode* node, int t, bool isRoot) {
+bool checkBTreeInvariants(BTreeNode* node, int order, bool isRoot) {
     if (!node) return true;
-    if (!isRoot && node->keys.size() < t - 1) return false;
-    if (node->keys.size() > 2 * t - 1) return false;
+    int maxKeys = order - 1;
+    int minKeys = std::max(1, static_cast<int>(std::ceil(order / 2.0)) - 1);
+    if (!isRoot && node->keys.size() < minKeys) return false;
+    if (node->keys.size() > maxKeys) return false;
     
     if (!node->leaf) {
         if (node->children.size() != node->keys.size() + 1) return false;
+        if (node->children.size() > static_cast<size_t>(order)) return false;
         for (auto child : node->children) {
-            if (!checkBTreeInvariants(child, t, false)) return false;
+            if (!checkBTreeInvariants(child, order, false)) return false;
         }
     }
     return true;

@@ -274,6 +274,31 @@ th {
 }
 .winner-tree { font-weight: 700; color: var(--accent); }
 
+.order-info {
+    margin-top: 0.5rem;
+    color: #cbd5e1;
+    font-size: 0.78rem;
+    line-height: 1.45;
+}
+
+.simulation-steps {
+    margin-left: 1rem;
+    color: #dbeafe;
+    font-size: 0.8rem;
+    line-height: 1.45;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.simulation-steps li {
+    margin-bottom: 0.45rem;
+}
+
+.simulation-steps .split {
+    color: #fbbf24;
+    font-weight: 700;
+}
+
 /* Responsive adjustments */
 @media (max-width: 1200px) {
     .container { flex-direction: column; }
