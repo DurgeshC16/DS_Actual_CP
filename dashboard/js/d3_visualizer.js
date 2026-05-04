@@ -67,9 +67,31 @@ class ADSVisualizer {
                 .parentId(d => d.parentId)
                 (hierarchicalData);
 
-            const nodeW = isBTree ? 90 : 70;
             const nodeH = isBTree ? 36 : 70;
-            const treeLayout = d3.tree().nodeSize([nodeW, 100]);
+
+            // Compute the widest actual rendered node width across all nodes
+            // so that sibling B-Tree/B+ Tree rectangles never overlap.
+            let nodeW = isBTree ? (() => {
+                const SLOT_W = 36;
+                let maxW = 80; // minimum
+                (treeData.nodes || []).forEach(n => {
+                    const keys = (() => {
+                        const kf = n.key;
+                        if (Array.isArray(kf)) return kf;
+                        const s = String(kf);
+                        if (s.includes('|')) return s.split('|');
+                        if (s.includes(',')) return s.split(',');
+                        return [s];
+                    })();
+                    const numKeys = keys.length;
+                    const w = numKeys * SLOT_W + (numKeys - 1) * 1; // dividers
+                    if (w + 24 > maxW) maxW = w + 24; // 24px horizontal padding
+                });
+                return maxW;
+            })() : 70;
+
+            const vertSpacing = treeData.type === 'bplus' ? 120 : 100;
+            const treeLayout = d3.tree().nodeSize([nodeW, vertSpacing]);
             treeLayout(root);
 
             // Issue 11: only reset zoom/pan on the first render (empty → content).

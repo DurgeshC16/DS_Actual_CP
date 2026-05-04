@@ -3,119 +3,545 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-World Applications - ADS Simulator</title>
+    <title>Real-World Applications — ADS Simulator</title>
+    <meta name="description" content="A reference guide to real-world applications of tree data structures: B+ Trees, Splay Trees, AVL Trees, B-Trees, and Binary Trees across five engineering domains.">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/navbar.css">
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="nav-content">
-            <div class="nav-logo">ADS Simulator</div>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="performance.html">Performance Analysis</a></li>
-                <li><a href="applications.html" class="active">Real-World Applications</a></li>
-                <li><a href="manual.html">Try With Your Data</a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <header>
-        <div class="header-content">
-            <h1>Real-World Scenarios</h1>
-            <p>Experience how advanced data structures solve complex engineering problems in production systems.</p>
-        </div>
-    </header>
-
-    <div class="container">
-        <aside class="sidebar">
-            <section class="card">
-                <h2>Simulations</h2>
-                <div class="control-group">
-                    <label>Scenario</label>
-                    <div id="mode-selector" class="sidebar-nav">
-                        <button type="button" class="nav-btn active" data-mode="sandbox">🧪 Interactive Sandbox</button>
-                        <button type="button" class="nav-btn" data-mode="database">🗄️ Database Indexing</button>
-                        <button type="button" class="nav-btn" data-mode="memory">💾 Memory Allocator</button>
-                        <button type="button" class="nav-btn" data-mode="filesystem">📁 File System</button>
-                        <button type="button" class="nav-btn" data-mode="expression">➕ Expression Parsing</button>
-                    </div>
-                </div>
-            </section>
-
-            <section class="card" id="dynamic-controls">
-                <!-- Controls injected by apps_logic.js -->
-                <h3>Controls</h3>
-                <div id="mode-controls-inner"></div>
-            </section>
-
-            <section class="card">
-                <h3>Operation Metrics</h3>
-                <div class="stat-row">
-                    <div class="stat-box">
-                        <div class="stat-label">Comparisons</div>
-                        <div class="stat-value" id="stat-ops">0</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-label">Time</div>
-                        <div class="stat-value" id="stat-time">0ms</div>
-                    </div>
-                </div>
-                <div class="stat-row" style="margin-top: 1rem;">
-                    <div class="stat-box">
-                        <div class="stat-label">Memory</div>
-                        <div class="stat-value" id="stat-mem">0 B</div>
-                    </div>
-                </div>
-            </section>
-        </aside>
-
-        <main class="main-content">
-            <div class="viz-area" id="d3-container">
-                <div class="viz-overlay">
-                    <div class="badge" id="mode-badge">Sandbox</div>
-                    <div class="badge" id="order-badge" style="display:none">Order: 3</div>
-                </div>
-            </div>
-
-            <section class="card">
-                <h3>Execution Logs</h3>
-                <div class="log-panel" id="log-list">
-                    <div class="log-entry">> System initialized. Select a scenario to begin simulation.</div>
-                </div>
-            </section>
-
-            <section class="card info-panel">
-                <h3 id="mode-title">About this Simulation</h3>
-                <p id="knowledge-text">Use the sandbox to test structural properties of AVL, Red-Black, B-Trees, and Splay Trees.</p>
-            </section>
-        </main>
-    </div>
-
     <style>
-        .sidebar-nav { display: flex; flex-direction: column; gap: 0.5rem; }
-        .nav-btn {
-            text-align: left;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 0.8rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
+        /* ── Page layout ── */
+        .apps-hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0f2240 100%);
+            padding: 3.5rem 2rem 2.5rem;
+            text-align: center;
+            border-bottom: 1px solid #1e3a5f;
         }
-        .nav-btn:hover { background: var(--bg-panel); }
-        .nav-btn.active {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: white;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        .apps-hero h1 {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 800;
+            background: linear-gradient(90deg, #60a5fa, #818cf8, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0 0 0.75rem;
+        }
+        .apps-hero p {
+            color: #94a3b8;
+            font-size: 1.05rem;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        /* ── Domain card grid ── */
+        .domains-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 560px), 1fr));
+            gap: 2rem;
+            padding: 2.5rem 2rem 4rem;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .domain-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .domain-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+        }
+
+        /* ── Card header ── */
+        .card-header {
+            padding: 1.4rem 1.6rem 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            border-bottom: 1px solid #334155;
+        }
+        .domain-icon {
+            font-size: 2rem;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .domain-meta { flex: 1; }
+        .domain-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin: 0 0 0.35rem;
+        }
+        .best-fit-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .best-fit-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #64748b;
+        }
+        .best-fit-badge {
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            letter-spacing: 0.02em;
+        }
+
+        /* Colour-coded per best-fit type */
+        .badge-bplus  { background: #1e40af; color: #bfdbfe; border: 1px solid #3b82f6; }
+        .badge-splay  { background: #713f12; color: #fde68a; border: 1px solid #f59e0b; }
+        .badge-avl    { background: #065f46; color: #a7f3d0; border: 1px solid #10b981; }
+        .badge-btree  { background: #4c1d95; color: #ddd6fe; border: 1px solid #8b5cf6; }
+        .badge-binary { background: #7f1d1d; color: #fecaca; border: 1px solid #f87171; }
+
+        /* ── Why section ── */
+        .card-why {
+            padding: 1rem 1.6rem;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            line-height: 1.65;
+            border-bottom: 1px solid #334155;
+        }
+        .card-why strong { color: #f1f5f9; }
+
+        /* ── Comparison grid ── */
+        .card-compare {
+            padding: 1rem 1.6rem 1.4rem;
+        }
+        .compare-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #475569;
+            margin-bottom: 0.75rem;
+        }
+
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.78rem;
+        }
+        .compare-table th {
+            text-align: left;
+            color: #475569;
+            font-weight: 600;
+            padding: 0.3rem 0.5rem 0.5rem;
+            border-bottom: 1px solid #334155;
+            white-space: nowrap;
+        }
+        .compare-table th:first-child { width: 110px; }
+        .compare-table td {
+            padding: 0.45rem 0.5rem;
+            border-bottom: 1px solid #1e293b;
+            vertical-align: middle;
+        }
+        .compare-table tr:last-child td { border-bottom: none; }
+        .tree-name {
+            font-weight: 600;
+            color: #94a3b8;
+            white-space: nowrap;
+        }
+        .tree-name.is-best { color: #f1f5f9; }
+
+        /* Rating pills */
+        .r { display: inline-block; padding: 0.18rem 0.55rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
+        .r-ex  { background: #052e16; color: #4ade80; border: 1px solid #16a34a; }
+        .r-good{ background: #1c1917; color: #fbbf24; border: 1px solid #92400e; }
+        .r-poor{ background: #1c0e0e; color: #f87171; border: 1px solid #991b1b; }
+        .r-na   { background: #1e293b; color: #475569; border: 1px solid #334155; }
+
+        /* "Best" row highlight */
+        .best-row td { background: rgba(59,130,246,0.07); }
+        .best-row .tree-name::after {
+            content: " ★";
+            color: #60a5fa;
+            font-size: 0.65rem;
         }
     </style>
+</head>
+<body>
 
-    <script src="js/d3_visualizer.js"></script>
-    <script src="js/apps_logic.js"></script>
+<nav class="navbar">
+    <div class="nav-content">
+        <div class="nav-logo">ADS Simulator</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="performance.html">Performance Analysis</a></li>
+            <li><a href="applications.html" class="active">Real-World Applications</a></li>
+            <li><a href="manual.html">Try With Your Data</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="apps-hero">
+    <h1>Real-World Applications</h1>
+    <p>Which tree wins and why — a domain-by-domain breakdown of AVL, Red-Black, B-Tree, B+ Tree, and Splay Tree in production engineering.</p>
+</div>
+
+<div class="domains-grid">
+
+    <!-- ─────────────────────────────────────────────────────────────
+         DOMAIN 1 — Database Indexing / B+ Tree
+    ───────────────────────────────────────────────────────────────── -->
+    <article class="domain-card">
+        <div class="card-header">
+            <div class="domain-icon">🗄️</div>
+            <div class="domain-meta">
+                <div class="domain-title">Database Indexing</div>
+                <div class="best-fit-row">
+                    <span class="best-fit-label">Best fit:</span>
+                    <span class="best-fit-badge badge-bplus">B+ Tree</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-why">
+            Databases store data on disk in fixed-size <strong>pages</strong>. B+ Trees pack many keys into one page, minimising disk I/O per lookup. <strong>All records live in linked leaf nodes</strong>, enabling lightning-fast range scans with a single sequential pass. Internal nodes carry only routing keys, maximising branching factor and guaranteeing <em>O(log<sub>m</sub> n)</em> lookups regardless of dataset size.
+        </div>
+        <div class="card-compare">
+            <div class="compare-title">Tree comparison for Database Indexing</div>
+            <table class="compare-table">
+                <thead>
+                    <tr>
+                        <th>Tree</th>
+                        <th>Lookup</th>
+                        <th>Range Scan</th>
+                        <th>Disk I/O</th>
+                        <th>Predictability</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="best-row">
+                        <td class="tree-name is-best">B+ Tree</td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">B-Tree</td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-good">Good</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">AVL</td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-good">Good</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">Red-Black</td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-good">Good</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">Splay</td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         DOMAIN 2 — In-Memory Caching / Splay Tree
+    ───────────────────────────────────────────────────────────────── -->
+    <article class="domain-card">
+        <div class="card-header">
+            <div class="domain-icon">⚡</div>
+            <div class="domain-meta">
+                <div class="domain-title">In-Memory Caching &amp; Recently Accessed Data</div>
+                <div class="best-fit-row">
+                    <span class="best-fit-label">Best fit:</span>
+                    <span class="best-fit-badge badge-splay">Splay Tree</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-why">
+            A Splay Tree <strong>restructures itself on every access</strong>, moving the touched node to the root. Recently and frequently used items are always near the root and can be found in amortised <em>O(1)</em> time for hot keys. There are <strong>no extra bookkeeping fields</strong> (colours, balance factors), so each operation has very low constant factors — ideal for a working set accessed repeatedly.
+        </div>
+        <div class="card-compare">
+            <div class="compare-title">Tree comparison for In-Memory Caching</div>
+            <table class="compare-table">
+                <thead>
+                    <tr>
+                        <th>Tree</th>
+                        <th>Hot-Key Access</th>
+                        <th>Temporal Locality</th>
+                        <th>Overhead</th>
+                        <th>Predictability</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="best-row">
+                        <td class="tree-name is-best">Splay</td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                        <td><span class="r r-good">Good</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">AVL</td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">Red-Black</td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">B-Tree</td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-good">Good</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">B+ Tree</td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-good">Good</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         DOMAIN 3 — OS Memory Allocation / AVL Tree
+    ───────────────────────────────────────────────────────────────── -->
+    <article class="domain-card">
+        <div class="card-header">
+            <div class="domain-icon">💾</div>
+            <div class="domain-meta">
+                <div class="domain-title">OS Memory Allocation &amp; Free-Block Management</div>
+                <div class="best-fit-row">
+                    <span class="best-fit-label">Best fit:</span>
+                    <span class="best-fit-badge badge-avl">AVL Tree</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-why">
+            A memory allocator must find the <strong>smallest free block that fits</strong> a request as fast as possible. AVL Trees guarantee <strong>strict O(log n)</strong> for search, insert, and delete — height is always bounded to 1.44 × log₂ n. This hard bound prevents latency spikes that are unacceptable in OS-level real-time allocation, unlike structures with amortised or unpredictable worst-case behaviour.
+        </div>
+        <div class="card-compare">
+            <div class="compare-title">Tree comparison for Memory Allocation</div>
+            <table class="compare-table">
+                <thead>
+                    <tr>
+                        <th>Tree</th>
+                        <th>Lookup</th>
+                        <th>Insert/Delete</th>
+                        <th>Worst-Case</th>
+                        <th>Memory/Node</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="best-row">
+                        <td class="tree-name is-best">AVL</td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">Red-Black</td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">Splay</td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">B-Tree</td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">B+ Tree</td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         DOMAIN 4 — File System Directory Indexing / B-Tree
+    ───────────────────────────────────────────────────────────────── -->
+    <article class="domain-card">
+        <div class="card-header">
+            <div class="domain-icon">📁</div>
+            <div class="domain-meta">
+                <div class="domain-title">File System Directory Indexing</div>
+                <div class="best-fit-row">
+                    <span class="best-fit-label">Best fit:</span>
+                    <span class="best-fit-badge badge-btree">B-Tree</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-why">
+            File systems store directory entries in fixed-size disk blocks. B-Trees allow directory lookups, creates, and deletes to <strong>resolve in internal nodes</strong> — no forced traversal to a leaf. XFS, ext4's HTree, and NTFS all use B-Tree-like structures because a single disk-block read can satisfy a lookup without going deeper, reducing I/O for point queries compared to a B+ Tree.
+        </div>
+        <div class="card-compare">
+            <div class="compare-title">Tree comparison for File System Directory Indexing</div>
+            <table class="compare-table">
+                <thead>
+                    <tr>
+                        <th>Tree</th>
+                        <th>Point Lookup</th>
+                        <th>Disk Locality</th>
+                        <th>Worst-Case</th>
+                        <th>Insert/Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="best-row">
+                        <td class="tree-name is-best">B-Tree</td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">B+ Tree</td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">AVL</td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">Red-Black</td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-good">Good</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">Splay</td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         DOMAIN 5 — Compiler / Expression Parsing (AST)
+    ───────────────────────────────────────────────────────────────── -->
+    <article class="domain-card">
+        <div class="card-header">
+            <div class="domain-icon">🧠</div>
+            <div class="domain-meta">
+                <div class="domain-title">Compiler &amp; Expression Parsing (AST)</div>
+                <div class="best-fit-row">
+                    <span class="best-fit-label">Best fit:</span>
+                    <span class="best-fit-badge badge-binary">Binary Tree</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-why">
+            Abstract Syntax Trees represent the <strong>hierarchical structure of code and expressions</strong>. Each internal node is an operator; each leaf is an operand. Structure is dictated entirely by operator precedence and parentheses — <strong>balance is irrelevant</strong>. Post-order traversal evaluates bottom-up. Self-balancing trees would break expression semantics by repositioning nodes based on key values rather than grammatical role.
+        </div>
+        <div class="card-compare">
+            <div class="compare-title">Tree comparison for Expression Parsing / AST</div>
+            <table class="compare-table">
+                <thead>
+                    <tr>
+                        <th>Tree</th>
+                        <th>Grammar Mapping</th>
+                        <th>Evaluation Order</th>
+                        <th>Semantics Safe</th>
+                        <th>Simplicity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="best-row">
+                        <td class="tree-name is-best">Binary Tree</td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                        <td><span class="r r-ex">Excellent</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">AVL</td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">Red-Black</td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">B-Tree</td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-na">N/A</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                    </tr>
+                    <tr>
+                        <td class="tree-name">Splay</td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                        <td><span class="r r-poor">Poor</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+</div><!-- /domains-grid -->
+
 </body>
 </html>
